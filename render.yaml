@@ -1,17 +1,27 @@
+databases:
+- name: whatsfest
+  databaseName: whatsfest
+  user: whatsfest_user
+  plan: free
+  region: oregon
+  ipAllowList:
+  - source: 0.0.0.0/0
+    description: everywhere
+  postgresMajorVersion: "17"
+
 services:
 - type: web
   name: whatsfest-backend
   env: node
   plan: free
-  buildCommand: cd backend && npm ci && npx prisma generate && npx prisma db push && npm run build
-  startCommand: cd backend && npm start
+  buildCommand: cd backend && npm run render-build
+  startCommand: cd backend && npm run render-start
   envVars:
   - key: NODE_ENV
     value: production
   - key: DATABASE_URL
-    fromService:
-      type: pserv
-      name: dpg-d3fch6buibrs73dravp0-a
+    fromDatabase:
+      name: whatsfest
       property: connectionString
   - key: ADMIN_KEY
     value: ChaveDeAcesso-festa17-J8kF%9zWp$rV3hL6sX
