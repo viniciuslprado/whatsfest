@@ -7,7 +7,7 @@
     "build": "npx prisma generate && tsc",
     "start": "node dist/server.js",
     "render-build": "npx prisma generate && npm run build",
-"render-start": "npx prisma migrate deploy && npm start",
+    "render-start": "npx prisma migrate deploy && npm start",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "dev:watch": "nodemon --exec ts-node src/server.ts",
     "seed": "ts-node prisma/seed.ts",

@@ -14,8 +14,8 @@ services:
   name: whatsfest-backend
   env: node
   plan: free
-  buildCommand: cd backend && npm run render-build
-  startCommand: cd backend && npm run render-start
+  buildCommand: cd backend && npm ci && npm run render-build
+startCommand: cd backend && npm run render-start
   envVars:
   - key: NODE_ENV
     value: production
