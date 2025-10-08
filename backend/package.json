@@ -14,9 +14,6 @@
     "db:seed": "npx prisma db seed",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  },
   "keywords": [
     "calendar",
     "api",
