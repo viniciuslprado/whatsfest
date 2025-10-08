@@ -1,7 +1,9 @@
 // frontend/src/lib/api.ts
 
-// Define a URL base do seu Back-end (trocar por http://[seu-app].render.com quando for para produção)
-const BASE_URL = 'http://localhost:3000/api/v1/festas'; 
+// Define a URL base do seu Back-end
+const BASE_URL = import.meta.env.VITE_API_BASE_URL 
+  ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/festas`
+  : (import.meta.env.PROD ? '/api/v1/festas' : 'http://localhost:3000/api/v1/festas'); 
 
 // Função para obter a chave de admin do localStorage
 // Em uma aplicação real, você usaria um sistema de login com JWT tokens
@@ -54,7 +56,9 @@ export async function criarNovaFesta(festaData: FestaData) {
   }
 }
 
-const PUBLIC_BASE_URL = 'http://localhost:3000/api/v1/festas';
+const PUBLIC_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+  ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/festas`
+  : (import.meta.env.PROD ? '/api/v1/festas' : 'http://localhost:3000/api/v1/festas');
 
 // Interface para os dados da Festa que vêm do Back-end
 export interface Festa {

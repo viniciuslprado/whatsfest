@@ -1,0 +1,17 @@
+{
+  "name": "whatsfest-fullstack",
+  "version": "1.0.0",
+  "description": "WhatsFest - Plataforma de Eventos",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install && npm run build",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "start": "cd backend && npm start",
+    "install-deps": "cd frontend && npm install && cd ../backend && npm install"
+  },
+  "keywords": ["react", "typescript", "events", "calendar"],
+  "author": "Vinicius",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
