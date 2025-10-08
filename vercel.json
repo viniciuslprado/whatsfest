@@ -1,43 +1,13 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    },
-    {
-      "src": "backend/src/server.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "backend/src/server.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "frontend/dist/$1"
-    }
-  ],
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "cd frontend && npm install",
+  "devCommand": "cd frontend && npm run dev",
+  "framework": "vite",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "source": "/((?!api/.*).*)",
+      "destination": "/index.html"
     }
-  ],
-  "functions": {
-    "backend/src/server.ts": {
-      "maxDuration": 30
-    }
-  },
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "ADMIN_USERNAME": "@admin_username", 
-    "ADMIN_PASSWORD": "@admin_password",
-    "ADMIN_KEY": "@admin_key"
-  }
+  ]
 }

@@ -2,23 +2,31 @@
 
 Uma plataforma moderna para descobrir e organizar eventos e festas da sua região.
 
-## 🚀 Deploy no Render
+## 🚀 Deploy 
 
-Este projeto está configurado para deploy automático no Render usando o arquivo `render.yaml`.
+### Deploy no Render (Backend)
 
-### Configuração do Deploy
-
-1. **Conecte seu repositório ao Render**
-2. **O arquivo `render.yaml` já está configurado** com:
-   - Backend Node.js (API)
-   - Frontend estático (React + Vite)
-   - Banco PostgreSQL
-
-### Estrutura do Deploy
-
+O backend está configurado para deploy no Render usando o arquivo `render.yaml`:
 - **Backend**: `https://whatsfest-backend.onrender.com`
-- **Frontend**: `https://whatsfest-frontend.onrender.com`
 - **Database**: PostgreSQL gratuito no Render
+
+### Deploy no Vercel (Frontend)
+
+O frontend está configurado para deploy no Vercel:
+- **Frontend**: Deploy automático via `vercel.json`
+- **Conecta automaticamente ao backend no Render**
+
+### Configuração dos Deploys
+
+**Render (Backend):**
+1. Conecte seu repositório ao Render
+2. O `render.yaml` será detectado automaticamente
+3. Backend + Database serão criados
+
+**Vercel (Frontend):**
+1. Conecte seu repositório ao Vercel
+2. O `vercel.json` configura o build automaticamente
+3. Frontend aponta para backend no Render
 
 ### Variáveis de Ambiente
 
