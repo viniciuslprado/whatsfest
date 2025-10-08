@@ -6,8 +6,8 @@ import dotenv from 'dotenv';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 // Importar rotas mock (atual) ou rotas com controller e Prisma
-import festaRoutes from './routes/festaRoutes'; // Mock data
-// import festaRoutes from './routes/festaRoutesWithController'; // Com Prisma (descomente esta linha e comente a de cima para usar Prisma)
+// import festaRoutes from './routes/festaRoutes'; // Mock data
+import festaRoutes from './routes/festaRoutesWithController'; // Com Prisma (usando controller e service)
 import geolocationRoutes from './routes/geolocation';
 import uploadRoutes from './routes/uploads';
 import flyersRoutes from './routes/flyers';
