@@ -22,13 +22,17 @@ model Festa {
   nome            String
   dataHora        DateTime // Armazena data e hora exatas
   cidade          String   // Para filtragem por geolocalização
-  local           String   // Nome do local (Clube X, Avenida Y)
+  local           String?  // Nome do local (Clube X, Avenida Y) - Opcional
   
   // Informações Complementares e Mídia
-  urlImagemFlyer  String   // Link para a imagem de divulgação
-  descricaoCurta  String   // Texto de chamada para o calendário
+  urlImagemFlyer  String?  // Link para a imagem de divulgação - Opcional
+  descricaoCurta  String?  // Texto de chamada para o calendário - Opcional
 
   // Configurações e Opcionais
   linkVendas      String?  // O '?' indica que este campo é opcional (pode ser NULO no DB)
   destaque        Boolean  @default(false) // Para o flyer principal no topo da página
+  
+  // Timestamps automáticos
+  criadoEm        DateTime @default(now())
+  atualizadoEm    DateTime @updatedAt
 }
