@@ -58,7 +58,8 @@ export async function criarNovaFesta(festaData: FestaData) {
 
 const PUBLIC_BASE_URL = import.meta.env.VITE_API_BASE_URL 
   ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/festas`
-  : (import.meta.env.PROD ? '/api/v1/festas' : 'http://localhost:3000/api/v1/festas');
+  : (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com/api/v1/festas' : 'http://localhost:3000/api/v1/festas');
+    
 
 // Interface para os dados da Festa que vêm do Back-end
 export interface Festa {

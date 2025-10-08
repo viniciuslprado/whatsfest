@@ -27,7 +27,7 @@ function App() {
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL 
         ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/login`
-        : (import.meta.env.PROD ? '/api/v1/auth/login' : 'http://localhost:3000/api/v1/auth/login');
+        : (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com/api/v1/auth/login' : 'http://localhost:3000/api/v1/auth/login');
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
