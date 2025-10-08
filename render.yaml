@@ -24,20 +24,8 @@ services:
       name: whatsfest
       property: connectionString
   - key: ADMIN_KEY
-    generateValue: true
+    value: ChaveDeAcesso-festa17-J8kF%9zWp$rV3hL6sX
   - key: PORT
     value: 10000
-
-- type: web
-  name: whatsfest-frontend
-  env: static
-  plan: free
-  buildCommand: cd frontend && npm ci && npm run build
-  staticPublishPath: ./frontend/dist
-  routes:
-  - type: rewrite
-    source: /*
-    destination: /index.html
-  envVars:
-  - key: VITE_API_BASE_URL
-    value: https://whatsfest-backend.onrender.com
+  - key: FRONTEND_URL
+    value: https://whatsfest.vercel.app

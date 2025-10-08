@@ -21,7 +21,33 @@ const PORT: number = parseInt(process.env.PORT as string) || 3000;
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+
+// CORS configuration for Vercel frontend
+const allowedOrigins = [
+  'http://localhost:5173', // Vite dev server
+  'http://localhost:3001', // Alternative dev port
+  'https://whatsfest.vercel.app', // Vercel production
+  process.env.FRONTEND_URL // Environment variable
+].filter((origin): origin is string => Boolean(origin));
+
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is allowed or is a Vercel preview deployment
+    if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 
 // Servir arquivos estáticos da pasta uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
