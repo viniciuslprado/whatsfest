@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Festa {
+  // Chave Primária, única e autoincrementável
+  id Int @id @default(autoincrement())
+
+  // Informações Essenciais da Festa
+  nome     String
+  dataHora DateTime // Armazena data e hora exatas
+  cidade   String // Para filtragem por geolocalização
+  local    String // Nome do local (Clube X, Avenida Y)
+
+  // Informações Complementares e Mídia
+  urlImagemFlyer String // Link para a imagem de divulgação
+  descricaoCurta String // Texto de chamada para o calendário
+
+  // Configurações e Opcionais
+  linkVendas String? // O '?' indica que este campo é opcional (pode ser NULO no DB)
+  destaque   Boolean @default(false) // Para o flyer principal no topo da página
+}
