@@ -58,30 +58,37 @@ interface FlyerImage {
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
+  // ========================================
+  // ESTADOS DO COMPONENTE
+  // ========================================
+  
+  // Estados do formulário
   const [formData, setFormData] = useState<FestaData>(initialFormData);
+  const [dateTimeFields, setDateTimeFields] = useState(initialDateTimeFields);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' | '' }>({ text: '', type: '' });
+  
+  // Estados para upload de arquivos
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  // Estados para gerenciamento de flyers
   const [flyers, setFlyers] = useState<FlyerImage[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Estados para autocomplete de cidades
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
   
-  // Estados para campos separados de data e hora
-  const [dateTimeFields, setDateTimeFields] = useState(initialDateTimeFields);
-  
-  // Estados para funcionalidade de edição
+  // Estados para gerenciamento de eventos
   const [isEditing, setIsEditing] = useState(false);
   const [eventosExistentes, setEventosExistentes] = useState<Evento[]>([]);
   const [eventoSelecionado, setEventoSelecionado] = useState<Evento | null>(null);
   
   // Estado para controle das abas
   const [activeTab, setActiveTab] = useState<'eventos' | 'flyers' | 'gerenciar'>('eventos');
+
+  // ========================================
+  // FUNÇÕES AUXILIARES
+  // ========================================
 
   // Função para atualizar campos do formulário
   const handleInputChange = (key: keyof FestaData, value: string | boolean) => {
@@ -155,6 +162,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       handleInputChange('dataHora', dataHora);
     }
   };
+
+  // ========================================
+  // FUNÇÕES DE GERENCIAMENTO DE EVENTOS
+  // ========================================
 
   // Função para carregar eventos existentes
   const carregarEventos = async () => {
@@ -249,7 +260,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
         });
 
         if (!response.ok) {
-          throw new Error('Erro ao atualizar evento');
+          const errorText = await response.text();
+          throw new Error(`Erro ao atualizar evento: ${response.status} - ${errorText}`);
         }
 
         setMessage({ text: '✅ Evento atualizado com sucesso!', type: 'success' });
@@ -276,6 +288,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       setLoading(false);
     }
   };
+
+  // ========================================
+  // EFEITOS E LISTENERS
+  // ========================================
 
   // Auto-ocultar mensagens após 4 segundos
   React.useEffect(() => {
@@ -316,6 +332,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       });
     }
   };
+
+  // ========================================
+  // FUNÇÕES DE UPLOAD DE ARQUIVOS
+  // ========================================
 
   // Funções para upload de flyers
   const handleDrag = (e: React.DragEvent) => {
@@ -1604,7 +1624,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
           </div>
         )}
 
-        {/* CSS para animações */}
+        {/* ======================================== */}
+        {/* ESTILOS CSS DINÂMICOS */}
+        {/* ======================================== */}
         <style>
           {`
             @keyframes slideDown {
