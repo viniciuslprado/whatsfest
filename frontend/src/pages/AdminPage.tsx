@@ -4,22 +4,19 @@ import type { FestaData } from '../lib/api';
 import { FaPlus, FaSave, FaSpinner, FaCheckCircle, FaTimesCircle, FaArrowLeft, FaUpload, FaImage, FaCog } from 'react-icons/fa';
 import { FiMapPin } from 'react-icons/fi';
 
-// Interface para eventos existentes
+// Interface para eventos existentes (compatível com Prisma schema)
 interface Evento {
-  _id: string;
+  id: number;
   nome: string;
-  data: string;
-  horaInicio: string;
-  horaFim: string;
-  local: string;
+  dataHora: string; // Campo principal do banco
   cidade: string;
-  descricao?: string;
-  preco?: string;
-  dataHora?: string; // Para compatibilidade com eventos antigos
+  local?: string;
   urlImagemFlyer?: string;
   linkVendas?: string;
   descricaoCurta?: string;
-  destaque?: boolean;
+  destaque: boolean;
+  criadoEm: string;
+  atualizadoEm: string;
 } 
 
 // Estado inicial do formulário (limpo)
@@ -215,7 +212,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       if (isEditing && eventoSelecionado) {
         // Atualizar evento existente
         const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-        const response = await fetch(`${apiUrl}/api/v1/festas/${eventoSelecionado._id}`, {
+        const response = await fetch(`${apiUrl}/api/v1/festas/${eventoSelecionado.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -492,7 +489,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                   gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
                 }}>
                   {eventosExistentes.map(evento => (
-                    <div key={evento._id} style={{
+                    <div key={evento.id} style={{
                       border: '1px solid rgba(139, 92, 246, 0.2)',
                       borderRadius: '12px',
                       padding: '20px',
@@ -509,10 +506,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                         {evento.nome}
                       </h4>
                       <div style={{ marginBottom: '8px' }}>
-                        <strong>Data:</strong> {new Date(evento.data).toLocaleDateString('pt-BR')}
+                        <strong>Data:</strong> {new Date(evento.dataHora).toLocaleDateString('pt-BR')}
                       </div>
                       <div style={{ marginBottom: '8px' }}>
-                        <strong>Horário:</strong> {evento.horaInicio} - {evento.horaFim}
+                        <strong>Horário:</strong> {new Date(evento.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                       {evento.local && (
                         <div style={{ marginBottom: '8px' }}>
