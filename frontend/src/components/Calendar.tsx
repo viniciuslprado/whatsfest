@@ -84,10 +84,13 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
           return false;
         }
         
-        // Filtro por data (a partir de)
+        // Filtro por data específica
         if (filters.data) {
           const dataFiltro = new Date(filters.data);
-          if (dataFesta < dataFiltro) {
+          // Comparar apenas a data (dia/mês/ano), ignorando horário
+          const dataFestaStr = dataFesta.toISOString().split('T')[0];
+          const dataFiltroStr = dataFiltro.toISOString().split('T')[0];
+          if (dataFestaStr !== dataFiltroStr) {
             return false;
           }
         }
@@ -361,7 +364,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
               }}>
                 {filters.nomeEvento && `"${filters.nomeEvento}"`}
                 {filters.cidade && ` em ${filters.cidade}`}
-                {filters.data && ` a partir de ${new Date(filters.data).toLocaleDateString('pt-BR')}`}
+                {filters.data && ` no dia ${new Date(filters.data).toLocaleDateString('pt-BR')}`}
               </div>
             )}
           </div>

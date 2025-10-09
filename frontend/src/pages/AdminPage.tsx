@@ -265,10 +265,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       setIsEditing(false);
       setEventoSelecionado(null);
       
-      // Recarregar lista de eventos
-      if (activeTab === 'gerenciar') {
-        carregarEventos();
-      }
+      // Recarregar lista de eventos sempre após edição/criação
+      await carregarEventos();
     } catch (error) {
       setMessage({ 
         text: `❌ Erro ao ${isEditing ? 'atualizar' : 'criar'} evento: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, 
@@ -276,6 +274,46 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Auto-ocultar mensagens após 4 segundos
+  React.useEffect(() => {
+    if (message.text) {
+      const timer = setTimeout(() => {
+        setMessage({ text: '', type: '' });
+      }, 4000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [message.text]);
+
+  // Função para deletar evento
+  const deletarEvento = async (evento: Evento) => {
+    if (!window.confirm(`Tem certeza que deseja excluir o evento "${evento.nome}"?\n\nEsta ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/v1/festas/${evento.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': localStorage.getItem('adminKey') || 'ChaveDeAcesso-festa17-J8kF%9zWp$rV3hL6sX'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao excluir evento');
+      }
+
+      setMessage({ text: '✅ Evento excluído com sucesso!', type: 'success' });
+      await carregarEventos(); // Recarregar lista
+    } catch (error) {
+      setMessage({ 
+        text: `❌ Erro ao excluir evento: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, 
+        type: 'error' 
+      });
     }
   };
 
@@ -453,17 +491,25 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
           </div>
         </div>
 
-        {/* Mensagens */}
+        {/* Mensagens - Posicionamento melhorado */}
         {message.text && (
           <div style={{
+            position: 'fixed',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
             background: message.type === 'success' ? '#10b981' : '#ef4444',
             color: 'white',
-            padding: '16px',
-            borderRadius: '8px',
-            marginBottom: '24px',
+            padding: '16px 24px',
+            borderRadius: '12px',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px'
+            gap: '8px',
+            zIndex: 9999,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            fontSize: '16px',
+            fontWeight: '600',
+            animation: 'slideDown 0.3s ease-out'
           }}>
             {message.type === 'success' ? <FaCheckCircle /> : <FaTimesCircle />}
             {message.text}
@@ -927,26 +973,64 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                       <div style={{ marginBottom: '16px' }}>
                         <strong>Cidade:</strong> {evento.cidade}
                       </div>
-                      <button 
-                        onClick={() => iniciarEdicao(evento)}
-                        style={{
-                          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '8px',
-                          padding: '8px 16px',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          fontWeight: '500',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
-                          transition: 'all 0.3s ease'
-                        }}
-                      >
-                        ✏️ Editar Evento
-                      </button>
+                      
+                      {/* Botões de Ação */}
+                      <div style={{
+                        display: 'flex',
+                        gap: '8px'
+                      }}>
+                        <button 
+                          onClick={() => iniciarEdicao(evento)}
+                          style={{
+                            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '8px 16px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                            transition: 'all 0.3s ease',
+                            flex: 1
+                          }}
+                        >
+                          ✏️ Editar
+                        </button>
+                        
+                        <button 
+                          onClick={() => deletarEvento(evento)}
+                          style={{
+                            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '8px 16px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+                            transition: 'all 0.3s ease',
+                            flex: 1
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 6px 16px rgba(239, 68, 68, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+                          }}
+                        >
+                          🗑️ Excluir
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1519,6 +1603,22 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
             )}
           </div>
         )}
+
+        {/* CSS para animações */}
+        <style>
+          {`
+            @keyframes slideDown {
+              from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+              }
+            }
+          `}
+        </style>
       </div>
     </div>
   );
