@@ -1,18 +1,9 @@
 {
-  "name": "whatsfest-fullstack",
+  "name": "whatsfest-temp",
   "version": "1.0.0",
-  "description": "WhatsFest - Plataforma de Eventos",
+  "private": true,
   "scripts": {
-    "build": "cd frontend && npm run build",
-    "vercel-build": "cd frontend && npm ci && npm run build",
-    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
-    "start": "cd backend && npm start",
-    "install-deps": "cd frontend && npm install && cd ../backend && npm install"
-  },
-  "keywords": ["react", "typescript", "events", "calendar"],
-  "author": "Vinicius",
-  "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^8.2.2"
+    "build": "echo 'Redirecting to frontend build' && cd frontend && npm run build",
+    "install": "echo 'Installing frontend deps' && cd frontend && npm install"
   }
 }
