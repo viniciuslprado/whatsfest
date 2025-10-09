@@ -128,6 +128,13 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     }
   };
 
+  // Função para selecionar uma sugestão de cidade
+  const selectCitySuggestion = (suggestion: string) => {
+    handleInputChange('cidade', suggestion);
+    setShowCitySuggestions(false);
+    setCitySuggestions([]);
+  };
+
   // Função para selecionar uma cidade das sugestões
   const selectCity = (city: string) => {
     handleInputChange('cidade', city);
@@ -168,12 +175,15 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     setEventoSelecionado(evento);
     setIsEditing(true);
     
+    // Mudar para a aba de gerenciar para mostrar o formulário de edição
+    setActiveTab('gerenciar');
+    
     // Preencher formulário com dados do evento
     setFormData({
       nome: evento.nome,
       dataHora: evento.dataHora || '',
       cidade: evento.cidade,
-      local: evento.local,
+      local: evento.local || '',
       urlImagemFlyer: evento.urlImagemFlyer || '',
       linkVendas: evento.linkVendas || '',
       descricaoCurta: evento.descricaoCurta || '',
@@ -183,8 +193,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     // Separar data e hora para os campos
     if (evento.dataHora) {
       const dataObj = new Date(evento.dataHora);
-      const data = dataObj.toISOString().split('T')[0];
-      const hora = dataObj.toTimeString().split(':').slice(0, 2).join(':');
+      
+      // Corrigir problema de fuso horário - usar data local
+      const ano = dataObj.getFullYear();
+      const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+      const dia = String(dataObj.getDate()).padStart(2, '0');
+      const data = `${ano}-${mes}-${dia}`;
+      
+      const hora = String(dataObj.getHours()).padStart(2, '0') + ':' + String(dataObj.getMinutes()).padStart(2, '0');
       
       setDateTimeFields({
         data,
@@ -209,6 +225,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     setMessage({ text: '', type: '' });
 
     try {
+      // Construir dataHora a partir dos campos separados
+      let dataHoraCompleta = formData.dataHora;
+      if (dateTimeFields.data && dateTimeFields.horaInicio) {
+        dataHoraCompleta = `${dateTimeFields.data}T${dateTimeFields.horaInicio}:00`;
+      }
+
+      const dadosParaEnvio = {
+        ...formData,
+        dataHora: dataHoraCompleta
+      };
+
       if (isEditing && eventoSelecionado) {
         // Atualizar evento existente
         const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
@@ -218,7 +245,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
             'Content-Type': 'application/json',
             'Authorization': localStorage.getItem('adminKey') || 'ChaveDeAcesso-festa17-J8kF%9zWp$rV3hL6sX'
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(dadosParaEnvio),
         });
 
         if (!response.ok) {
@@ -228,7 +255,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
         setMessage({ text: '✅ Evento atualizado com sucesso!', type: 'success' });
       } else {
         // Criar novo evento
-        await criarNovaFesta(formData);
+        await criarNovaFesta(dadosParaEnvio);
         setMessage({ text: '✅ Evento criado com sucesso!', type: 'success' });
       }
       
@@ -462,8 +489,389 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
               alignItems: 'center',
               gap: '8px'
             }}>
-              📝 Gerenciar Eventos
+              {isEditing ? '✏️ Editar Evento' : '📝 Gerenciar Eventos'}
             </h2>
+
+            {/* Formulário de Edição (quando estiver editando) */}
+            {isEditing && eventoSelecionado && (
+              <div style={{
+                background: 'rgba(254, 252, 232, 0.8)',
+                border: '1px solid #fbbf24',
+                borderRadius: '12px',
+                padding: '24px',
+                marginBottom: '24px'
+              }}>
+                <h3 style={{
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  color: '#92400e',
+                  marginBottom: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  ✏️ Editando: {eventoSelecionado.nome}
+                </h3>
+
+                <form onSubmit={handleSubmit}>
+                  <div style={{ display: 'grid', gap: '20px' }}>
+                    {/* Nome do Evento */}
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: '#374151',
+                        marginBottom: '8px'
+                      }}>
+                        Nome do Evento *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.nome}
+                        onChange={(e) => handleInputChange('nome', e.target.value)}
+                        placeholder="Ex: Festa de Ano Novo 2024"
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          border: '2px solid #e5e7eb',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'border-color 0.3s ease',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                    </div>
+
+                    {/* Data e Hora */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px' }}>
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          color: '#374151',
+                          marginBottom: '8px'
+                        }}>
+                          Data do Evento *
+                        </label>
+                        <input
+                          type="date"
+                          value={dateTimeFields.data}
+                          onChange={(e) => setDateTimeFields(prev => ({ ...prev, data: e.target.value }))}
+                          required
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            outline: 'none',
+                            transition: 'border-color 0.3s ease',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          color: '#374151',
+                          marginBottom: '8px'
+                        }}>
+                          Hora Início
+                        </label>
+                        <input
+                          type="time"
+                          value={dateTimeFields.horaInicio}
+                          onChange={(e) => setDateTimeFields(prev => ({ ...prev, horaInicio: e.target.value }))}
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            outline: 'none',
+                            transition: 'border-color 0.3s ease',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          color: '#374151',
+                          marginBottom: '8px'
+                        }}>
+                          Hora Fim
+                        </label>
+                        <input
+                          type="time"
+                          value={dateTimeFields.horaFim}
+                          onChange={(e) => setDateTimeFields(prev => ({ ...prev, horaFim: e.target.value }))}
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            outline: 'none',
+                            transition: 'border-color 0.3s ease',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Cidade */}
+                    <div style={{ position: 'relative' }}>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: '#374151',
+                        marginBottom: '8px'
+                      }}>
+                        <FiMapPin style={{ display: 'inline', marginRight: '6px' }} />
+                        Cidade *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.cidade}
+                        onChange={(e) => handleCitySearch(e.target.value)}
+                        placeholder="Ex: São Paulo, SP"
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          border: '2px solid #e5e7eb',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'border-color 0.3s ease',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      
+                      {/* Sugestões de cidade */}
+                      {showCitySuggestions && citySuggestions.length > 0 && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          right: 0,
+                          background: 'white',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                          zIndex: 1000,
+                          maxHeight: '200px',
+                          overflowY: 'auto'
+                        }}>
+                          {citySuggestions.map((suggestion, index) => (
+                            <div
+                              key={index}
+                              onClick={() => selectCitySuggestion(suggestion)}
+                              style={{
+                                padding: '12px 16px',
+                                cursor: 'pointer',
+                                borderBottom: index < citySuggestions.length - 1 ? '1px solid #f3f4f6' : 'none',
+                                transition: 'background-color 0.2s ease'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f9fafb';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                              }}
+                            >
+                              {suggestion}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Local */}
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: '#374151',
+                        marginBottom: '8px'
+                      }}>
+                        Local do Evento
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.local}
+                        onChange={(e) => handleInputChange('local', e.target.value)}
+                        placeholder="Ex: Casa de Festas XYZ"
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          border: '2px solid #e5e7eb',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'border-color 0.3s ease',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                    </div>
+
+                    {/* Descrição */}
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: '#374151',
+                        marginBottom: '8px'
+                      }}>
+                        Descrição Curta
+                      </label>
+                      <textarea
+                        value={formData.descricaoCurta}
+                        onChange={(e) => handleInputChange('descricaoCurta', e.target.value)}
+                        placeholder="Ex: Uma noite inesquecível para celebrar o Ano Novo!"
+                        rows={3}
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          border: '2px solid #e5e7eb',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'border-color 0.3s ease',
+                          boxSizing: 'border-box',
+                          resize: 'vertical'
+                        }}
+                      />
+                    </div>
+
+                    {/* Link de Vendas */}
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: '#374151',
+                        marginBottom: '8px'
+                      }}>
+                        Link de Vendas
+                      </label>
+                      <input
+                        type="url"
+                        value={formData.linkVendas}
+                        onChange={(e) => handleInputChange('linkVendas', e.target.value)}
+                        placeholder="Ex: https://www.ticketmaster.com.br/evento"
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          border: '2px solid #e5e7eb',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'border-color 0.3s ease',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                    </div>
+
+                    {/* Destaque */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '16px',
+                      background: 'rgba(249, 250, 251, 0.5)',
+                      borderRadius: '8px',
+                      border: '1px solid #e5e7eb'
+                    }}>
+                      <input
+                        type="checkbox"
+                        id="destaque"
+                        checked={formData.destaque}
+                        onChange={(e) => handleInputChange('destaque', e.target.checked)}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          cursor: 'pointer'
+                        }}
+                      />
+                      <label htmlFor="destaque" style={{
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        cursor: 'pointer'
+                      }}>
+                        Marcar como evento em destaque
+                      </label>
+                    </div>
+
+                    {/* Botões de Ação */}
+                    <div style={{ 
+                      display: 'flex',
+                      gap: '12px',
+                      marginTop: '16px'
+                    }}>
+                      <button
+                        type="button"
+                        onClick={cancelarEdicao}
+                        style={{
+                          background: '#6b7280',
+                          border: 'none',
+                          color: 'white',
+                          padding: '16px 32px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                          flex: '1'
+                        }}
+                      >
+                        ❌ Cancelar
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        style={{
+                          background: loading ? '#9ca3af' : 'linear-gradient(135deg, #10b981, #059669)',
+                          border: 'none',
+                          color: 'white',
+                          padding: '16px 32px',
+                          borderRadius: '8px',
+                          cursor: loading ? 'not-allowed' : 'pointer',
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                          flex: '1',
+                          boxShadow: loading ? 'none' : '0 4px 16px rgba(16, 185, 129, 0.3)',
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        {loading ? <FaSpinner className="animate-spin" /> : '💾'}
+                        {loading ? 'Salvando...' : 'Salvar Alterações'}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            )}
             
             {eventosExistentes.length === 0 ? (
               <div style={{
@@ -566,7 +974,11 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
               alignItems: 'center',
               gap: '8px'
             }}>
-              <FaPlus /> Criar Novo Evento
+              {isEditing ? (
+                <>✏️ Editar Evento</>
+              ) : (
+                <><FaPlus /> Criar Novo Evento</>
+              )}
             </h2>
 
             <form onSubmit={handleSubmit}>

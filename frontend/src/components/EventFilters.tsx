@@ -36,7 +36,20 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
   
   const { error: locationError, searchCities } = useLocation();
 
-
+  // Função para converter nome do estado para sigla
+  const getStateAbbreviation = React.useCallback((stateName: string): string => {
+    const stateMap: Record<string, string> = {
+      'Acre': 'AC', 'Alagoas': 'AL', 'Amapá': 'AP', 'Amazonas': 'AM',
+      'Bahia': 'BA', 'Ceará': 'CE', 'Distrito Federal': 'DF', 'Espírito Santo': 'ES',
+      'Goiás': 'GO', 'Maranhão': 'MA', 'Mato Grosso': 'MT', 'Mato Grosso do Sul': 'MS',
+      'Minas Gerais': 'MG', 'Pará': 'PA', 'Paraíba': 'PB', 'Paraná': 'PR',
+      'Pernambuco': 'PE', 'Piauí': 'PI', 'Rio de Janeiro': 'RJ', 'Rio Grande do Norte': 'RN',
+      'Rio Grande do Sul': 'RS', 'Rondônia': 'RO', 'Roraima': 'RR', 'Santa Catarina': 'SC',
+      'São Paulo': 'SP', 'Sergipe': 'SE', 'Tocantins': 'TO'
+    };
+    
+    return stateMap[stateName] || stateName.substring(0, 2).toUpperCase();
+  }, []);
 
   // Função de geolocalização silenciosa (sem mensagens visuais)
   const tryAutoDetectLocation = React.useCallback(() => {
@@ -65,9 +78,25 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
           );
           
           if (response.ok && !geolocationCancelled) {
-            // Geolocalização detectada silenciosamente
+            const data = await response.json();
+            
+            // Extrair nome da cidade
+            const city = data.address?.city || 
+                        data.address?.town || 
+                        data.address?.municipality ||
+                        data.address?.village ||
+                        '';
+            
+            const state = data.address?.state;
+            
+            // Converter nome do estado para sigla se possível
+            const stateAbbr = state ? getStateAbbreviation(state) : '';
+            const cityName = city && stateAbbr ? `${city} (${stateAbbr})` : city;
+            
+            // Definir cidade detectada no campo (se o usuário não editou)
             setLocalFilters(prev => ({
               ...prev,
+              cidade: cityName || prev.cidade, // Só sobrescreve se encontrou uma cidade
               userLatitude: latitude,
               userLongitude: longitude,
               maxDistance: 25
@@ -94,7 +123,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
         maximumAge: 600000
       }
     );
-  }, [geolocationCancelled]);
+  }, [geolocationCancelled, getStateAbbreviation]);
 
   // Sincronizar apenas quando os filtros externos são limpos (todos vazios)
   React.useEffect(() => {
