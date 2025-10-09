@@ -203,15 +203,30 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     
     // Separar data e hora para os campos
     if (evento.dataHora) {
-      const dataObj = new Date(evento.dataHora);
+      console.log('DEBUG - Data original do evento:', evento.dataHora);
       
-      // Corrigir problema de fuso horário - usar data local
-      const ano = dataObj.getFullYear();
-      const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
-      const dia = String(dataObj.getDate()).padStart(2, '0');
-      const data = `${ano}-${mes}-${dia}`;
+      // Abordagem mais simples: extrair diretamente da string se for ISO
+      let data = '';
+      let hora = '';
       
-      const hora = String(dataObj.getHours()).padStart(2, '0') + ':' + String(dataObj.getMinutes()).padStart(2, '0');
+      if (typeof evento.dataHora === 'string' && evento.dataHora.includes('T')) {
+        // String ISO (YYYY-MM-DDTHH:mm:ss)
+        const [datePart, timePart] = evento.dataHora.split('T');
+        data = datePart; // Já está no formato YYYY-MM-DD
+        hora = timePart.substring(0, 5); // HH:mm
+        console.log('DEBUG - Extraído da ISO:', { data, hora });
+      } else {
+        // Fallback para outras formatações
+        const dataObj = new Date(evento.dataHora);
+        const ano = dataObj.getFullYear();
+        const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataObj.getDate()).padStart(2, '0');
+        data = `${ano}-${mes}-${dia}`;
+        hora = String(dataObj.getHours()).padStart(2, '0') + ':' + String(dataObj.getMinutes()).padStart(2, '0');
+        console.log('DEBUG - Construído manualmente:', { data, hora });
+      }
+      
+      console.log('DEBUG - Resultado final:', { data, hora });
       
       setDateTimeFields({
         data,
