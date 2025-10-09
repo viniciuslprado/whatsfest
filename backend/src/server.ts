@@ -32,22 +32,52 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
+    console.log('🔍 CORS Debug - Origin:', origin);
     
-    // Check if origin is allowed or is a Vercel preview deployment
-    if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) {
+      console.log('✅ CORS: No origin - allowing');
       return callback(null, true);
     }
     
+    // Check if origin is allowed or is a Vercel preview deployment
+    if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+      console.log('✅ CORS: Origin allowed -', origin);
+      return callback(null, true);
+    }
+    
+    console.log('❌ CORS: Origin blocked -', origin);
+    console.log('📋 Allowed origins:', allowedOrigins);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200, // Para suporte a navegadores legados
+  preflightContinue: false
 };
 
 app.use(cors(corsOptions));
+
+// Middleware adicional para garantir headers CORS em todas as respostas
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log(`🌐 ${req.method} ${req.path} - Origin: ${origin}`);
+  
+  if (origin && (allowedOrigins.includes(origin) || origin.includes('vercel.app'))) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  }
+  
+  // Responder a requisições OPTIONS automaticamente
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
 
 // Servir arquivos estáticos da pasta uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
