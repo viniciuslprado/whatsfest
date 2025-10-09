@@ -3,7 +3,7 @@
 // Define a URL base do seu Back-end
 const BASE_URL = import.meta.env.VITE_API_BASE_URL 
   ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/festas`
-  : (import.meta.env.PROD ? '/api/v1/festas' : 'http://localhost:3000/api/v1/festas'); 
+  : (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com/api/v1/festas' : 'http://localhost:3000/api/v1/festas'); 
 
 // Função para obter a chave de admin do localStorage
 // Em uma aplicação real, você usaria um sistema de login com JWT tokens
