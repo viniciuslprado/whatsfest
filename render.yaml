@@ -15,7 +15,7 @@ services:
   env: node
   plan: free
   buildCommand: cd backend && npm ci && npm run render-build
-startCommand: cd backend && npm run render-start
+  startCommand: cd backend && npm run render-start
   envVars:
   - key: NODE_ENV
     value: production
@@ -25,6 +25,14 @@ startCommand: cd backend && npm run render-start
       property: connectionString
   - key: ADMIN_KEY
     value: ChaveDeAcesso-festa17-J8kF%9zWp$rV3hL6sX
+  - key: ADMIN_SECRET_KEY
+    value: ChaveDeAcesso-festa17-J8kF%9zWp$rV3hL6sX
+  - key: ADMIN_USERNAME
+    value: admin
+  - key: ADMIN_PASSWORD
+    value: 123456
+  - key: HG_BRASIL_API_KEY
+    value: 995ebb85
   - key: PORT
     value: 10000
   - key: FRONTEND_URL
