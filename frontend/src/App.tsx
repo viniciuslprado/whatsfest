@@ -28,6 +28,14 @@ function App() {
       const apiUrl = import.meta.env.VITE_API_BASE_URL 
         ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/login`
         : (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com/api/v1/auth/login' : 'http://localhost:3000/api/v1/auth/login');
+      
+      // Debug logs para verificar URL e variáveis de ambiente
+      console.log('🔍 Debug Login:');
+      console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
+      console.log('PROD:', import.meta.env.PROD);
+      console.log('API URL:', apiUrl);
+      console.log('Username:', username);
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
