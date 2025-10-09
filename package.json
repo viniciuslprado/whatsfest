@@ -1,20 +1,18 @@
 {
-  "name": "whatsfest-monorepo",
+  "name": "whatsfest-fullstack",
   "version": "1.0.0",
-  "description": "WhatsFest Event Calendar - Frontend deployed on Vercel, Backend on Render",
-  "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "description": "WhatsFest - Plataforma de Eventos",
   "scripts": {
-    "vercel-build": "cd frontend && npm run build",
-    "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && npm run dev",
-    "build:frontend": "cd frontend && npm run build",
-    "build:backend": "cd backend && npm run build"
+    "build": "cd frontend && npm run build",
+    "vercel-build": "cd frontend && npm ci && npm run build",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "start": "cd backend && npm start",
+    "install-deps": "cd frontend && npm install && cd ../backend && npm install"
   },
-  "keywords": ["events", "calendar", "react", "node"],
-  "author": "viniciuslprado",
-  "license": "MIT"
+  "keywords": ["react", "typescript", "events", "calendar"],
+  "author": "Vinicius",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
