@@ -25,190 +25,125 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [citySuggestions, setCitySuggestions] = React.useState<string[]>([]);
   const [hasUserEditedCity, setHasUserEditedCity] = React.useState(false);
-  const [locationStatus, setLocationStatus] = React.useState<'detecting' | 'found' | 'error' | 'none'>('none');
-  const [detectedCityName, setDetectedCityName] = React.useState<string>('');
+
   const [geolocationCancelled, setGeolocationCancelled] = React.useState(false);
   
-  const { location, error: locationError, searchCities } = useLocation();
+  const { error: locationError, searchCities } = useLocation();
 
-  // Sincronizar filtros locais quando os filtros externos mudarem (apenas quando limpar)
-  React.useEffect(() => {
-    if (!filters.nomeEvento && !filters.cidade && !filters.data) {
-      setLocalFilters(filters);
-    }
-  }, [filters]);
 
-  // Função para converter nome do estado para sigla
-  const getStateAbbreviation = React.useCallback((stateName: string | undefined): string => {
-    if (!stateName) return '';
-    
-    const stateMap: Record<string, string> = {
-      'Acre': 'AC', 'Alagoas': 'AL', 'Amapá': 'AP', 'Amazonas': 'AM',
-      'Bahia': 'BA', 'Ceará': 'CE', 'Distrito Federal': 'DF', 'Espírito Santo': 'ES',
-      'Goiás': 'GO', 'Maranhão': 'MA', 'Mato Grosso': 'MT', 'Mato Grosso do Sul': 'MS',
-      'Minas Gerais': 'MG', 'Pará': 'PA', 'Paraíba': 'PB', 'Paraná': 'PR',
-      'Pernambuco': 'PE', 'Piauí': 'PI', 'Rio de Janeiro': 'RJ', 'Rio Grande do Norte': 'RN',
-      'Rio Grande do Sul': 'RS', 'Rondônia': 'RO', 'Roraima': 'RR', 'Santa Catarina': 'SC',
-      'São Paulo': 'SP', 'Sergipe': 'SE', 'Tocantins': 'TO'
-    };
-    
-    // Buscar nome exato
-    if (stateMap[stateName]) return stateMap[stateName];
-    
-    // Buscar nome parcial (case insensitive)
-    const normalizedInput = stateName.toLowerCase();
-    for (const [fullName, abbr] of Object.entries(stateMap)) {
-      if (fullName.toLowerCase().includes(normalizedInput) || 
-          normalizedInput.includes(fullName.toLowerCase())) {
-        return abbr;
-      }
-    }
-    
-    // Se já é uma sigla de 2 letras, retorna ela mesma
-    if (stateName.length === 2 && /^[A-Z]{2}$/.test(stateName.toUpperCase())) {
-      return stateName.toUpperCase();
-    }
-    
-    return '';
-  }, []);
 
+  // Função de geolocalização silenciosa (sem mensagens visuais)
   const tryAutoDetectLocation = React.useCallback(() => {
     if (!navigator.geolocation || geolocationCancelled) {
       return;
     }
 
-    // Não mostrar "detectando" imediatamente, fazer silenciosamente
-    let timeoutId: number | null = null;
-    
-    // Só mostrar "detectando" se demorar mais de 1 segundo
-    timeoutId = setTimeout(() => {
-      if (!geolocationCancelled) {
-        setLocationStatus('detecting');
-      }
-    }, 1000);
-
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        // Limpar timeout se conseguiu rapidamente
-        if (timeoutId) clearTimeout(timeoutId);
-        
-        // Verificar se foi cancelado durante a detecção
         if (geolocationCancelled) {
           return;
         }
 
         const { latitude, longitude } = position.coords;
         
-        // Fazer reverse geocoding de forma mais discreta
         try {
-          // Controller para cancelar requisição se necessário
           const controller = new AbortController();
-          
-          // Timeout mais curto para não travar
           setTimeout(() => controller.abort(), 3000);
           
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
             {
-              headers: {
-                'User-Agent': 'WhatsFest-Calendar/1.0'
-              },
+              headers: { 'User-Agent': 'WhatsFest-Calendar/1.0' },
               signal: controller.signal
             }
           );
           
           if (response.ok && !geolocationCancelled) {
-            const data = await response.json();
-            
-            // Extrair cidade e estado de forma consistente com a pesquisa manual IBGE
-            const city = data.address?.city || 
-                        data.address?.town || 
-                        data.address?.municipality ||
-                        data.address?.village ||
-                        'Cidade';
-            
-            const state = data.address?.state;
-            
-            // Formato padronizado: "Cidade (UF)" (igual ao IBGE)
-            // Converter nome completo do estado para sigla se necessário
-            const stateAbbr = getStateAbbreviation(state);
-            const cityName = stateAbbr ? `${city} (${stateAbbr})` : city;
-                           
-            setDetectedCityName(cityName);
-            setLocationStatus('found');
-            
-            // Usar filters atuais e atualizar com geolocalização
-            onFiltersChange({
-              nomeEvento: filters.nomeEvento,
-              cidade: filters.cidade,
-              data: filters.data,
+            // Geolocalização detectada silenciosamente
+            setLocalFilters(prev => ({
+              ...prev,
               userLatitude: latitude,
               userLongitude: longitude,
               maxDistance: 25
-            });
+            }));
           }
         } catch {
-          // Se foi cancelado ou erro de rede, apenas usar coordenadas sem nome
           if (!geolocationCancelled) {
-            // Não definir nome da cidade se não conseguir obter
-            setLocationStatus('found');
-            
-            // Usar filters atuais e atualizar com geolocalização
-            onFiltersChange({
-              nomeEvento: filters.nomeEvento,
-              cidade: filters.cidade,
-              data: filters.data,
+            // Usar apenas coordenadas sem nome da cidade
+            setLocalFilters(prev => ({
+              ...prev,
               userLatitude: latitude,
               userLongitude: longitude,
               maxDistance: 25
-            });
+            }));
           }
         }
       },
       () => {
-        if (timeoutId) clearTimeout(timeoutId);
-        if (!geolocationCancelled) {
-          setLocationStatus('none');
-        }
+        // Erro ao obter geolocalização - continuar sem coordenadas
       },
       {
-        enableHighAccuracy: false, // Mais rápido
-        timeout: 3000, // Reduzido para 3 segundos
-        maximumAge: 600000, // 10 minutos de cache (aumentado)
+        enableHighAccuracy: false,
+        timeout: 3000,
+        maximumAge: 600000
       }
     );
-  }, [filters.nomeEvento, filters.cidade, filters.data, onFiltersChange, geolocationCancelled, getStateAbbreviation]);
+  }, [geolocationCancelled]);
 
-  // Detectar localização automaticamente quando componente carrega
+  // Inicializar filtros locais apenas uma vez
+  React.useEffect(() => {
+    setLocalFilters({
+      nomeEvento: '',
+      cidade: '',
+      data: '',
+      userLatitude: undefined,
+      userLongitude: undefined,
+      maxDistance: undefined
+    });
+  }, []);
+
+  // Detectar localização automaticamente quando componente carrega (silenciosamente)
   React.useEffect(() => {
     if (!hasUserEditedCity && !localFilters.cidade && !geolocationCancelled) {
       tryAutoDetectLocation();
     }
   }, [hasUserEditedCity, localFilters.cidade, geolocationCancelled, tryAutoDetectLocation]);
 
-  const handleInputChange = (key: string, value: string) => {
-    // Atualizar apenas os filtros locais, não aplicar automaticamente
-    setLocalFilters({
-      ...localFilters,
+
+
+  // Removido: Geolocalização automática simplificada (não mostrar status confuso)
+
+  // Removido: Detecção automática de localização
+
+  const handleInputChange = React.useCallback((key: keyof FilterState, value: string) => {
+    // Atualizar apenas os filtros locais usando callback para evitar re-renders
+    setLocalFilters(prev => ({
+      ...prev,
       [key]: value
-    });
-  };
+    }));
+  }, []);
 
   const selectSuggestion = (suggestion: string) => {
-    handleInputChange('cidade', suggestion);
+    setLocalFilters(prev => ({
+      ...prev,
+      cidade: suggestion
+    }));
     setShowSuggestions(false);
     setCitySuggestions([]);
     setHasUserEditedCity(true);
   };
 
-  const handleCitySearch = async (value: string) => {
+  const handleCitySearch = React.useCallback(async (value: string) => {
     // Cancelar geolocalização se usuário começou a digitar
     if (!geolocationCancelled && value.length > 0) {
       setGeolocationCancelled(true);
-      setLocationStatus('none');
     }
     
-    handleInputChange('cidade', value);
+    // Atualizar diretamente com callback
+    setLocalFilters(prev => ({
+      ...prev,
+      cidade: value
+    }));
     setHasUserEditedCity(true);
     
     if (value.length >= 2) {
@@ -223,7 +158,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
       setShowSuggestions(false);
       setCitySuggestions([]);
     }
-  };
+  }, [geolocationCancelled, searchCities]);
 
   const clearFilters = () => {
     const clearedFilters = {
@@ -235,15 +170,13 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
       maxDistance: undefined
     };
     
-    setLocationStatus('none');
-    setDetectedCityName('');
     setHasUserEditedCity(false);
-    setGeolocationCancelled(false); // Permitir nova detecção
+    setGeolocationCancelled(false);
     setLocalFilters(clearedFilters);
     onFiltersChange(clearedFilters);
   };
 
-  const hasActiveFilters = localFilters.nomeEvento || localFilters.cidade || localFilters.data || (locationStatus === 'found');
+  const hasActiveFilters = localFilters.nomeEvento || localFilters.cidade || localFilters.data;
 
   return (
     <div style={{
@@ -323,34 +256,11 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
             gap: '6px'
           }}>
             <FiMapPin /> Cidade
-            {location?.city && !hasUserEditedCity && (
-              <span style={{
-                fontSize: '12px',
-                color: '#10b981',
-                background: '#f0fdf4',
-                padding: '2px 8px',
-                borderRadius: '12px',
-                fontWeight: 'normal'
-              }}>
-                <FiMapPin style={{ display: 'inline', marginRight: '4px' }} />
-                Detectada automaticamente
-              </span>
-            )}
           </label>
           <div style={{ position: 'relative', display: 'flex', gap: '8px' }}>
             <input
               type="text"
-              placeholder={
-                locationStatus === 'detecting' 
-                  ? "🔄 Detectando sua localização..." 
-                  : locationStatus === 'found' && detectedCityName
-                  ? `Digite uma cidade ou use "${detectedCityName}" (detectada)`
-                  : locationStatus === 'found' && !detectedCityName
-                  ? "🌟 Localização detectada - Digite uma cidade ou deixe vazio para eventos próximos"
-                  : location?.city 
-                  ? `Digite uma cidade ou use "${location.city}" (detectada)` 
-                  : "Digite uma cidade (ex: São Paulo, SP ou Rio de Janeiro, RJ)"
-              }
+              placeholder="Digite uma cidade (ex: São Paulo, SP)"
               value={localFilters.cidade}
               onChange={(e) => handleCitySearch(e.target.value)}
               style={{
@@ -366,55 +276,18 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
                 e.currentTarget.style.borderColor = '#8b5cf6';
                 e.currentTarget.style.outline = 'none';
                 
-                // Cancelar geolocalização quando usuário clica no campo
-                if (!geolocationCancelled && locationStatus === 'detecting') {
-                  setGeolocationCancelled(true);
-                  setLocationStatus('none');
-                }
-                
                 if (localFilters.cidade.length >= 2) {
                   setShowSuggestions(true);
                 }
               }}
               onBlur={(e) => {
                 e.currentTarget.style.borderColor = '#e5e7eb';
-                // Delay para permitir click nas sugestões
-                setTimeout(() => setShowSuggestions(false), 200);
+                // Delay maior para permitir click nas sugestões sem conflito
+                setTimeout(() => setShowSuggestions(false), 300);
               }}
             />
             
-            {/* Botão para usar cidade detectada */}
-            {locationStatus === 'found' && detectedCityName && !localFilters.cidade && (
-              <button
-                type="button"
-                onClick={() => {
-                  handleInputChange('cidade', detectedCityName);
-                  setHasUserEditedCity(true);
-                }}
-                style={{
-                  padding: '8px 12px',
-                  background: '#f0fdf4',
-                  border: '1px solid #16a34a',
-                  borderRadius: '6px',
-                  color: '#16a34a',
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#16a34a';
-                  e.currentTarget.style.color = 'white';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#f0fdf4';
-                  e.currentTarget.style.color = '#16a34a';
-                }}
-              >
-                📍 {detectedCityName}
-              </button>
-            )}
+
           </div>
           
           {/* Lista de Sugestões Melhorada */}
@@ -641,22 +514,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
         </div>
       )}
       
-      {location && location.city && (
-        <div style={{
-          marginTop: '12px',
-          padding: '8px 12px',
-          background: '#ecfdf5',
-          borderRadius: '6px',
-          color: '#065f46',
-          fontSize: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <FiMapPin style={{ display: 'inline', marginRight: '4px' }} />
-          Localização detectada: {location.city}
-        </div>
-      )}
+
 
       <style>
         {`
