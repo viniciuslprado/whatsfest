@@ -32,22 +32,14 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    console.log('🔍 CORS Debug - Origin:', origin);
-    
     // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) {
-      console.log('✅ CORS: No origin - allowing');
-      return callback(null, true);
-    }
+    if (!origin) return callback(null, true);
     
     // Check if origin is allowed or is a Vercel preview deployment
     if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
-      console.log('✅ CORS: Origin allowed -', origin);
       return callback(null, true);
     }
     
-    console.log('❌ CORS: Origin blocked -', origin);
-    console.log('📋 Allowed origins:', allowedOrigins);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -62,7 +54,6 @@ app.use(cors(corsOptions));
 // Middleware adicional para garantir headers CORS em todas as respostas
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  console.log(`🌐 ${req.method} ${req.path} - Origin: ${origin}`);
   
   if (origin && (allowedOrigins.includes(origin) || origin.includes('vercel.app'))) {
     res.header('Access-Control-Allow-Origin', origin);
