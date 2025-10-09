@@ -127,20 +127,25 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
 
   // Sincronizar apenas quando os filtros externos são limpos (todos vazios)
   React.useEffect(() => {
-    if (!filters.nomeEvento && !filters.cidade && !filters.data && 
-        (localFilters.nomeEvento || localFilters.cidade || localFilters.data)) {
-      setLocalFilters({
-        nomeEvento: '',
-        cidade: '',
-        data: '',
-        userLatitude: undefined,
-        userLongitude: undefined,
-        maxDistance: undefined
+    if (!filters.nomeEvento && !filters.cidade && !filters.data) {
+      setLocalFilters(prev => {
+        // Só limpar se realmente há algo para limpar
+        if (prev.nomeEvento || prev.cidade || prev.data) {
+          setHasUserEditedCity(false);
+          setGeolocationCancelled(false);
+          return {
+            nomeEvento: '',
+            cidade: '',
+            data: '',
+            userLatitude: undefined,
+            userLongitude: undefined,
+            maxDistance: undefined
+          };
+        }
+        return prev;
       });
-      setHasUserEditedCity(false);
-      setGeolocationCancelled(false);
     }
-  }, [filters, localFilters]);
+  }, [filters]);
 
   // Detectar localização automaticamente quando componente carrega (silenciosamente)
   React.useEffect(() => {
