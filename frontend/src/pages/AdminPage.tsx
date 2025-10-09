@@ -96,8 +96,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     if (query.length < 2) return [];
 
     try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/v1/geolocation/cities?search=${encodeURIComponent(query)}`
+        `${apiUrl}/api/v1/geolocation/cities?search=${encodeURIComponent(query)}`
       );
 
       if (!response.ok) {
@@ -154,7 +155,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
   // Função para carregar eventos existentes
   const carregarEventos = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/festas');
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/v1/festas`);
       if (response.ok) {
         const eventos = await response.json();
         setEventosExistentes(eventos);
@@ -212,7 +214,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     try {
       if (isEditing && eventoSelecionado) {
         // Atualizar evento existente
-        const response = await fetch(`http://localhost:3000/api/v1/festas/${eventoSelecionado._id}`, {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+        const response = await fetch(`${apiUrl}/api/v1/festas/${eventoSelecionado._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -287,7 +290,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     formData.append('flyerImage', file);
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/uploads/flyer-image', {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/v1/uploads/flyer-image`, {
         method: 'POST',
         body: formData,
       });

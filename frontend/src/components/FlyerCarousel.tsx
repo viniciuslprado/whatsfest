@@ -23,7 +23,8 @@ const FlyerCarousel: React.FC = () => {
   const loadFeaturedFlyers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/v1/flyers/featured');
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/v1/flyers/featured`);
       if (response.ok) {
         const data = await response.json();
         setFeaturedFlyers(data.flyers || []);
