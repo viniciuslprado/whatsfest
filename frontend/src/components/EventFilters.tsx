@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { MdEvent } from 'react-icons/md';
 import { FiSearch, FiMapPin } from 'react-icons/fi';
-import useLocationHG from '../hooks/useLocationHG';
+import useLocation from '../hooks/useLocation';
 
 
 export interface FilterState {
@@ -20,6 +20,8 @@ interface EventFiltersProps {
 }
 
 const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange }) => {
+  // Estados locais para os inputs (não aplicam filtros automaticamente)
+  const [localFilters, setLocalFilters] = React.useState<FilterState>(filters);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [citySuggestions, setCitySuggestions] = React.useState<string[]>([]);
   const [hasUserEditedCity, setHasUserEditedCity] = React.useState(false);
@@ -27,7 +29,14 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
   const [detectedCityName, setDetectedCityName] = React.useState<string>('');
   const [geolocationCancelled, setGeolocationCancelled] = React.useState(false);
   
-  const { location, error: locationError, searchCities } = useLocationHG();
+  const { location, error: locationError, searchCities } = useLocation();
+
+  // Sincronizar filtros locais quando os filtros externos mudarem (apenas quando limpar)
+  React.useEffect(() => {
+    if (!filters.nomeEvento && !filters.cidade && !filters.data) {
+      setLocalFilters(filters);
+    }
+  }, [filters]);
 
   // Função para converter nome do estado para sigla
   const getStateAbbreviation = React.useCallback((stateName: string | undefined): string => {
@@ -128,8 +137,11 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
             setDetectedCityName(cityName);
             setLocationStatus('found');
             
+            // Usar filters atuais e atualizar com geolocalização
             onFiltersChange({
-              ...filters,
+              nomeEvento: filters.nomeEvento,
+              cidade: filters.cidade,
+              data: filters.data,
               userLatitude: latitude,
               userLongitude: longitude,
               maxDistance: 25
@@ -141,8 +153,11 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
             // Não definir nome da cidade se não conseguir obter
             setLocationStatus('found');
             
+            // Usar filters atuais e atualizar com geolocalização
             onFiltersChange({
-              ...filters,
+              nomeEvento: filters.nomeEvento,
+              cidade: filters.cidade,
+              data: filters.data,
               userLatitude: latitude,
               userLongitude: longitude,
               maxDistance: 25
@@ -162,18 +177,19 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
         maximumAge: 600000, // 10 minutos de cache (aumentado)
       }
     );
-  }, [filters, onFiltersChange, geolocationCancelled, getStateAbbreviation]);
+  }, [filters.nomeEvento, filters.cidade, filters.data, onFiltersChange, geolocationCancelled, getStateAbbreviation]);
 
   // Detectar localização automaticamente quando componente carrega
   React.useEffect(() => {
-    if (!hasUserEditedCity && !filters.cidade && !geolocationCancelled) {
+    if (!hasUserEditedCity && !localFilters.cidade && !geolocationCancelled) {
       tryAutoDetectLocation();
     }
-  }, [hasUserEditedCity, filters.cidade, geolocationCancelled, tryAutoDetectLocation]);
+  }, [hasUserEditedCity, localFilters.cidade, geolocationCancelled, tryAutoDetectLocation]);
 
   const handleInputChange = (key: string, value: string) => {
-    onFiltersChange({
-      ...filters,
+    // Atualizar apenas os filtros locais, não aplicar automaticamente
+    setLocalFilters({
+      ...localFilters,
       [key]: value
     });
   };
@@ -210,21 +226,24 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
   };
 
   const clearFilters = () => {
-    setLocationStatus('none');
-    setDetectedCityName('');
-    setHasUserEditedCity(false);
-    setGeolocationCancelled(false); // Permitir nova detecção
-    onFiltersChange({
+    const clearedFilters = {
       nomeEvento: '',
       cidade: '',
       data: '',
       userLatitude: undefined,
       userLongitude: undefined,
       maxDistance: undefined
-    });
+    };
+    
+    setLocationStatus('none');
+    setDetectedCityName('');
+    setHasUserEditedCity(false);
+    setGeolocationCancelled(false); // Permitir nova detecção
+    setLocalFilters(clearedFilters);
+    onFiltersChange(clearedFilters);
   };
 
-  const hasActiveFilters = filters.nomeEvento || filters.cidade || filters.data || (locationStatus === 'found');
+  const hasActiveFilters = localFilters.nomeEvento || localFilters.cidade || localFilters.data || (locationStatus === 'found');
 
   return (
     <div style={{
@@ -271,7 +290,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
           <input
             type="text"
             placeholder="Ex: Festa de Ano Novo"
-            value={filters.nomeEvento}
+            value={localFilters.nomeEvento}
             onChange={(e) => handleInputChange('nomeEvento', e.target.value)}
             style={{
               width: '100%',
@@ -332,7 +351,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
                   ? `Digite uma cidade ou use "${location.city}" (detectada)` 
                   : "Digite uma cidade (ex: São Paulo, SP ou Rio de Janeiro, RJ)"
               }
-              value={filters.cidade}
+              value={localFilters.cidade}
               onChange={(e) => handleCitySearch(e.target.value)}
               style={{
                 flex: 1,
@@ -353,7 +372,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
                   setLocationStatus('none');
                 }
                 
-                if (filters.cidade.length >= 2) {
+                if (localFilters.cidade.length >= 2) {
                   setShowSuggestions(true);
                 }
               }}
@@ -365,7 +384,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
             />
             
             {/* Botão para usar cidade detectada */}
-            {locationStatus === 'found' && detectedCityName && !filters.cidade && (
+            {locationStatus === 'found' && detectedCityName && !localFilters.cidade && (
               <button
                 type="button"
                 onClick={() => {
@@ -486,7 +505,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
                   </div>
                 );
               })}
-              {citySuggestions.length === 0 && filters.cidade.length >= 2 && (
+              {citySuggestions.length === 0 && localFilters.cidade.length >= 2 && (
                 <div style={{
                   padding: '20px 16px',
                   textAlign: 'center',
@@ -494,7 +513,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
                   fontSize: '14px'
                 }}>
                   <div style={{ marginBottom: '8px' }}>🔍</div>
-                  Nenhuma cidade encontrada para "{filters.cidade}"
+                  Nenhuma cidade encontrada para "{localFilters.cidade}"
                 </div>
               )}
             </div>
@@ -517,7 +536,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
           </label>
           <input
             type="date"
-            value={filters.data}
+            value={localFilters.data}
             onChange={(e) => handleInputChange('data', e.target.value)}
             style={{
               width: '100%',
@@ -548,8 +567,8 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
       }}>
         <button
           onClick={() => {
-            // Força uma atualização dos filtros
-            onFiltersChange({ ...filters });
+            // Aplicar filtros locais quando clicar no botão
+            onFiltersChange({ ...localFilters });
           }}
           style={{
             background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',

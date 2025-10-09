@@ -18,7 +18,9 @@ export interface UseLocationResult {
 }
 
 // URL da API do backend
-const API_BASE_URL = 'http://localhost:3000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+  ? `${import.meta.env.VITE_API_BASE_URL}/api/v1`
+  : (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com/api/v1' : 'http://localhost:3000/api/v1');
 
 const useLocation = (): UseLocationResult => {
   const [location, setLocation] = useState<LocationData | null>(null);
