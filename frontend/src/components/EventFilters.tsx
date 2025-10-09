@@ -21,11 +21,17 @@ interface EventFiltersProps {
 
 const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange }) => {
   // Estados locais para os inputs (não aplicam filtros automaticamente)
-  const [localFilters, setLocalFilters] = React.useState<FilterState>(filters);
+  const [localFilters, setLocalFilters] = React.useState<FilterState>({
+    nomeEvento: '',
+    cidade: '',
+    data: '',
+    userLatitude: undefined,
+    userLongitude: undefined,
+    maxDistance: undefined
+  });
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [citySuggestions, setCitySuggestions] = React.useState<string[]>([]);
   const [hasUserEditedCity, setHasUserEditedCity] = React.useState(false);
-
   const [geolocationCancelled, setGeolocationCancelled] = React.useState(false);
   
   const { error: locationError, searchCities } = useLocation();
@@ -90,17 +96,22 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
     );
   }, [geolocationCancelled]);
 
-  // Inicializar filtros locais apenas uma vez
+  // Sincronizar apenas quando os filtros externos são limpos (todos vazios)
   React.useEffect(() => {
-    setLocalFilters({
-      nomeEvento: '',
-      cidade: '',
-      data: '',
-      userLatitude: undefined,
-      userLongitude: undefined,
-      maxDistance: undefined
-    });
-  }, []);
+    if (!filters.nomeEvento && !filters.cidade && !filters.data && 
+        (localFilters.nomeEvento || localFilters.cidade || localFilters.data)) {
+      setLocalFilters({
+        nomeEvento: '',
+        cidade: '',
+        data: '',
+        userLatitude: undefined,
+        userLongitude: undefined,
+        maxDistance: undefined
+      });
+      setHasUserEditedCity(false);
+      setGeolocationCancelled(false);
+    }
+  }, [filters, localFilters]);
 
   // Detectar localização automaticamente quando componente carrega (silenciosamente)
   React.useEffect(() => {
