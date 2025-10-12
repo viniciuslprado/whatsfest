@@ -35,10 +35,20 @@ const festaService = {
   // Criar uma nova festa
   async criarFesta(dadosFesta: ICreateFestaRequest) {
     try {
+      // Processar data se fornecida
+      let dataProcessada = null;
+      if (dadosFesta.data) {
+        // Converter string de data para DateTime preservando timezone local
+        const [year, month, day] = dadosFesta.data.split('-').map(Number);
+        dataProcessada = new Date(year, month - 1, day);
+      }
+
       const novaFesta = await prisma.festa.create({
         data: {
           nome: dadosFesta.nome,
-          dataHora: new Date(dadosFesta.dataHora),
+          data: dataProcessada,
+          horaInicio: dadosFesta.horaInicio || null,
+          horaFim: dadosFesta.horaFim || null,
           cidade: dadosFesta.cidade,
           local: dadosFesta.local || null,
           urlImagemFlyer: dadosFesta.urlImagemFlyer || null,
@@ -70,7 +80,19 @@ const festaService = {
       const dadosParaAtualizar: any = {};
       
       if (dadosAtualizacao.nome !== undefined) dadosParaAtualizar.nome = dadosAtualizacao.nome;
-      if (dadosAtualizacao.dataHora !== undefined) dadosParaAtualizar.dataHora = new Date(dadosAtualizacao.dataHora);
+      if (dadosAtualizacao.dataHora !== undefined) {
+        // Corrigir problema de timezone - interpretar como data local
+        const dataString = dadosAtualizacao.dataHora;
+        if (typeof dataString === 'string' && dataString.includes('T')) {
+          // Para strings ISO, forçar interpretação como timezone local
+          const [datePart, timePart] = dataString.split('T');
+          const [year, month, day] = datePart.split('-').map(Number);
+          const [hour, minute] = timePart.split(':').map(Number);
+          dadosParaAtualizar.dataHora = new Date(year, month - 1, day, hour, minute);
+        } else {
+          dadosParaAtualizar.dataHora = new Date(dataString);
+        }
+      }
       if (dadosAtualizacao.cidade !== undefined) dadosParaAtualizar.cidade = dadosAtualizacao.cidade;
       if (dadosAtualizacao.local !== undefined) dadosParaAtualizar.local = dadosAtualizacao.local;
       if (dadosAtualizacao.urlImagemFlyer !== undefined) dadosParaAtualizar.urlImagemFlyer = dadosAtualizacao.urlImagemFlyer;

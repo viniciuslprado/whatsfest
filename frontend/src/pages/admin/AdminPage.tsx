@@ -8,7 +8,9 @@ import { FiMapPin } from 'react-icons/fi';
 interface Evento {
   id: number;
   nome: string;
-  dataHora: string; // Campo principal do banco
+  data?: string; // Data do evento
+  horaInicio?: string; // Hora de início
+  horaFim?: string; // Hora de fim
   cidade: string;
   local?: string;
   urlImagemFlyer?: string;
@@ -22,7 +24,9 @@ interface Evento {
 // Estado inicial do formulário (limpo)
 const initialFormData: FestaData = {
   nome: '',
-  dataHora: '', // Será montado a partir dos campos separados
+  data: undefined,
+  horaInicio: undefined,
+  horaFim: undefined,
   cidade: '',
   local: '',
   urlImagemFlyer: 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto', // Placeholder para eventos de texto
@@ -151,16 +155,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
 
   // Função para atualizar campos de data/hora
   const handleDateTimeChange = (field: keyof typeof initialDateTimeFields, value: string) => {
-    const newFields = { ...dateTimeFields, [field]: value };
-    setDateTimeFields(newFields);
-    
-    // Combinar data e hora de início em dataHora
-    if (newFields.data) {
-      // Se houver hora de início, usa ela. Senão, usa 00:00
-      const hora = newFields.horaInicio || '00:00';
-      const dataHora = `${newFields.data}T${hora}`;
-      handleInputChange('dataHora', dataHora);
-    }
+    setDateTimeFields(prev => ({ ...prev, [field]: value }));
   };
 
   // ========================================
@@ -192,7 +187,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     // Preencher formulário com dados do evento
     setFormData({
       nome: evento.nome,
-      dataHora: evento.dataHora || '',
+      data: evento.data,
+      horaInicio: evento.horaInicio,
+      horaFim: evento.horaFim,
       cidade: evento.cidade,
       local: evento.local || '',
       urlImagemFlyer: evento.urlImagemFlyer || '',
@@ -201,33 +198,12 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       destaque: evento.destaque || false,
     });
     
-    // Separar data e hora para os campos
-    if (evento.dataHora) {
-      // Abordagem mais simples: extrair diretamente da string se for ISO
-      let data = '';
-      let hora = '';
-      
-      if (typeof evento.dataHora === 'string' && evento.dataHora.includes('T')) {
-        // String ISO (YYYY-MM-DDTHH:mm:ss)
-        const [datePart, timePart] = evento.dataHora.split('T');
-        data = datePart; // Já está no formato YYYY-MM-DD
-        hora = timePart.substring(0, 5); // HH:mm
-      } else {
-        // Fallback para outras formatações
-        const dataObj = new Date(evento.dataHora);
-        const ano = dataObj.getFullYear();
-        const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
-        const dia = String(dataObj.getDate()).padStart(2, '0');
-        data = `${ano}-${mes}-${dia}`;
-        hora = String(dataObj.getHours()).padStart(2, '0') + ':' + String(dataObj.getMinutes()).padStart(2, '0');
-      }
-      
-      setDateTimeFields({
-        data,
-        horaInicio: hora,
-        horaFim: '', // Pode ser implementado depois
-      });
-    }
+    // Preencher campos de data e hora
+    setDateTimeFields({
+      data: evento.data || '',
+      horaInicio: evento.horaInicio || '',
+      horaFim: evento.horaFim || '',
+    });
   };
 
   // Função para cancelar edição
@@ -245,15 +221,18 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     setMessage({ text: '', type: '' });
 
     try {
-      // Construir dataHora a partir dos campos separados
-      let dataHoraCompleta = formData.dataHora;
-      if (dateTimeFields.data && dateTimeFields.horaInicio) {
-        dataHoraCompleta = `${dateTimeFields.data}T${dateTimeFields.horaInicio}:00`;
-      }
-
+      // Enviar dados separados (data, horaInicio, horaFim) em vez de dataHora
       const dadosParaEnvio = {
-        ...formData,
-        dataHora: dataHoraCompleta
+        nome: formData.nome,
+        data: dateTimeFields.data || undefined,
+        horaInicio: dateTimeFields.horaInicio || undefined,
+        horaFim: dateTimeFields.horaFim || undefined,
+        cidade: formData.cidade,
+        local: formData.local || undefined,
+        urlImagemFlyer: formData.urlImagemFlyer || undefined,
+        linkVendas: formData.linkVendas || undefined,
+        descricaoCurta: formData.descricaoCurta || undefined,
+        destaque: formData.destaque
       };
 
       if (isEditing && eventoSelecionado) {
@@ -998,12 +977,16 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                       }}>
                         {evento.nome}
                       </h4>
-                      <div style={{ marginBottom: '8px' }}>
-                        <strong>Data:</strong> {new Date(evento.dataHora).toLocaleDateString('pt-BR')}
-                      </div>
-                      <div style={{ marginBottom: '8px' }}>
-                        <strong>Horário:</strong> {new Date(evento.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                      </div>
+                      {evento.data && (
+                        <div style={{ marginBottom: '8px' }}>
+                          <strong>Data:</strong> {new Date(evento.data).toLocaleDateString('pt-BR')}
+                        </div>
+                      )}
+                      {evento.horaInicio && (
+                        <div style={{ marginBottom: '8px' }}>
+                          <strong>Horário:</strong> {evento.horaInicio} {evento.horaFim && ` - ${evento.horaFim}`}
+                        </div>
+                      )}
                       {evento.local && (
                         <div style={{ marginBottom: '8px' }}>
                           <strong>Local:</strong> {evento.local}

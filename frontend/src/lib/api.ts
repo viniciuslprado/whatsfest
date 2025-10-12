@@ -14,7 +14,9 @@ const getAdminKey = () => {
 // Interface (Tipo) para os dados da Festa que vamos enviar
 export interface FestaData {
   nome: string;
-  dataHora: string; // Enviamos como string ISO
+  data?: string; // Data no formato YYYY-MM-DD
+  horaInicio?: string; // Hora no formato HH:mm
+  horaFim?: string; // Hora no formato HH:mm
   cidade: string;
   local?: string; // Opcional
   urlImagemFlyer?: string; // Opcional
@@ -65,7 +67,9 @@ const PUBLIC_BASE_URL = import.meta.env.VITE_API_BASE_URL
 export interface Festa {
   id: number;
   nome: string;
-  dataHora: string; // Vem como string ISO 8601
+  data?: string; // Data no formato ISO 8601
+  horaInicio?: string; // Hora de início 
+  horaFim?: string; // Hora de fim
   cidade: string;
   local?: string; // Opcional
   urlImagemFlyer?: string; // Opcional

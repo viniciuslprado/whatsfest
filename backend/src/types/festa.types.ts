@@ -2,7 +2,9 @@
 export interface IFesta {
   id: number;
   nome: string;
-  dataHora: string; // ISO 8601 string
+  data?: string; // Data no formato ISO (YYYY-MM-DD)
+  horaInicio?: string; // Horário de início (HH:mm)
+  horaFim?: string; // Horário de fim (HH:mm)
   cidade: string;
   local?: string;
   urlImagemFlyer?: string;
@@ -15,7 +17,9 @@ export interface IFesta {
 
 export interface ICreateFestaRequest {
   nome: string;
-  dataHora: string;
+  data?: string | null;
+  horaInicio?: string | null;
+  horaFim?: string | null;
   cidade: string;
   local?: string;
   urlImagemFlyer?: string;

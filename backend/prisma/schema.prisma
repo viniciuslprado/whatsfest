@@ -19,7 +19,9 @@ model Festa {
   
   // Informações Essenciais da Festa
   nome            String
-  dataHora        DateTime // Armazena data e hora exatas
+  data            DateTime? // Data do evento - Opcional
+  horaInicio      String?   // Horário de início (formato HH:mm) - Opcional
+  horaFim         String?   // Horário de fim (formato HH:mm) - Opcional
   cidade          String   // Para filtragem por geolocalização
   local           String?  // Nome do local (Clube X, Avenida Y) - Opcional
   
