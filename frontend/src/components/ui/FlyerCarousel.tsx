@@ -97,21 +97,9 @@ const FlyerCarousel: React.FC = () => {
   }
 
   if (featuredFlyers.length === 0) {
-    return (
-      <div style={{ 
-        textAlign: 'center', 
-        padding: '40px', 
-        color: '#6b7280',
-        background: '#f9fafb',
-        borderRadius: '12px',
-        marginBottom: '40px'
-      }}>
-        <FiCalendar size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
-        <p style={{ fontSize: '16px', margin: 0 }}>
-          Nenhum flyer em destaque disponível no momento.
-        </p>
-      </div>
-    );
+    // Não renderiza nada quando não há flyers
+    // Isso permite que o campo de busca apareça no lugar
+    return null;
   }
 
   const currentFlyer = featuredFlyers[currentIndex];
