@@ -10,7 +10,8 @@ const festaService = {
       const festas = await prisma.festa.findMany({
         orderBy: [
           { destaque: 'desc' }, // Eventos em destaque primeiro
-          { dataHora: 'asc' }   // Depois por data
+          { data: 'asc' },      // Depois por data
+          { horaInicio: 'asc' } // E por horário
         ]
       });
 
@@ -80,19 +81,17 @@ const festaService = {
       const dadosParaAtualizar: any = {};
       
       if (dadosAtualizacao.nome !== undefined) dadosParaAtualizar.nome = dadosAtualizacao.nome;
-      if (dadosAtualizacao.dataHora !== undefined) {
-        // Corrigir problema de timezone - interpretar como data local
-        const dataString = dadosAtualizacao.dataHora;
-        if (typeof dataString === 'string' && dataString.includes('T')) {
-          // Para strings ISO, forçar interpretação como timezone local
-          const [datePart, timePart] = dataString.split('T');
-          const [year, month, day] = datePart.split('-').map(Number);
-          const [hour, minute] = timePart.split(':').map(Number);
-          dadosParaAtualizar.dataHora = new Date(year, month - 1, day, hour, minute);
+      if (dadosAtualizacao.data !== undefined) {
+        // Processar data se fornecida
+        if (dadosAtualizacao.data) {
+          const [year, month, day] = dadosAtualizacao.data.split('-').map(Number);
+          dadosParaAtualizar.data = new Date(year, month - 1, day);
         } else {
-          dadosParaAtualizar.dataHora = new Date(dataString);
+          dadosParaAtualizar.data = null;
         }
       }
+      if (dadosAtualizacao.horaInicio !== undefined) dadosParaAtualizar.horaInicio = dadosAtualizacao.horaInicio || null;
+      if (dadosAtualizacao.horaFim !== undefined) dadosParaAtualizar.horaFim = dadosAtualizacao.horaFim || null;
       if (dadosAtualizacao.cidade !== undefined) dadosParaAtualizar.cidade = dadosAtualizacao.cidade;
       if (dadosAtualizacao.local !== undefined) dadosParaAtualizar.local = dadosAtualizacao.local;
       if (dadosAtualizacao.urlImagemFlyer !== undefined) dadosParaAtualizar.urlImagemFlyer = dadosAtualizacao.urlImagemFlyer;

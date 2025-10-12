@@ -76,28 +76,30 @@ router.get('/:id', (req: Request<IFestaParams>, res: Response) => {
 // POST /api/v1/festas - Criar nova festa
 router.post('/', (req: Request, res: Response) => {
   try {
-    const { nome, dataHora, cidade, local, urlImagemFlyer, linkVendas, descricaoCurta, destaque } = req.body;
+    const { nome, data, horaInicio, horaFim, cidade, local, urlImagemFlyer, linkVendas, descricaoCurta, destaque } = req.body;
     
     // Validação básica
-    if (!nome || !dataHora || !cidade) {
+    if (!nome || !cidade) {
       return res.status(400).json({
         success: false,
-        message: 'Nome, dataHora e cidade são obrigatórios'
+        message: 'Nome e cidade são obrigatórios'
       });
     }
     
-    // Validar formato de data ISO
-    if (!isValidISODate(dataHora)) {
+    // Validar formato de data ISO se fornecida
+    if (data && !isValidISODate(data)) {
       return res.status(400).json({
         success: false,
-        message: 'dataHora deve estar no formato ISO 8601 (ex: 2025-10-15T20:00:00.000Z)'
+        message: 'data deve estar no formato ISO 8601 (ex: 2025-10-15T00:00:00.000Z)'
       });
     }
     
     const novaFesta: IFesta = {
       id: Date.now(), // ID temporário
       nome,
-      dataHora,
+      data,
+      horaInicio,
+      horaFim,
       cidade,
       local,
       urlImagemFlyer: urlImagemFlyer || 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto',
@@ -151,11 +153,11 @@ router.put('/:id', (req: Request<IFestaParams>, res: Response) => {
     
     const updateData = req.body;
     
-    // Validar dataHora se fornecida
-    if (updateData.dataHora && !isValidISODate(updateData.dataHora)) {
+    // Validar data se fornecida
+    if (updateData.data && !isValidISODate(updateData.data)) {
       return res.status(400).json({
         success: false,
-        message: 'dataHora deve estar no formato ISO 8601'
+        message: 'data deve estar no formato ISO 8601'
       });
     }
     

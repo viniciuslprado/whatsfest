@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { buscarFestas } from '../lib/api'; 
-import type { Festa } from '../lib/api'
-import FestaDetailsModal from './FestaDetailsModal'; // Importa o Modal de Detalhes
-import DayEventsModal from './DayEventsModal'; // Importa o Modal de Eventos do Dia
+import { buscarFestas } from '../../lib/api'; 
+import type { Festa } from '../../lib/api'
+import FestaDetailsModal from '../modals/FestaDetailsModal'; // Importa o Modal de Detalhes
+import DayEventsModal from '../modals/DayEventsModal'; // Importa o Modal de Eventos do Dia
 import { FiSearch, FiCalendar, FiClock, FiMapPin, FiHome, FiFrown, FiStar } from 'react-icons/fi';
 
 // Endereço de uma API gratuita de geolocalização (IP para Cidade)
@@ -70,7 +70,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
   // Filtra as festas aplicando apenas os filtros (sem restrição de mês/ano)
   const festasFiltradas = useMemo(() => {
     return festas.filter(festa => {
-      const dataFesta = new Date(festa.dataHora);
+      const dataFesta = festa.data ? new Date(festa.data) : null;
       
       // Aplicar filtros se existirem
       if (filters) {
@@ -85,7 +85,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
         }
         
         // Filtro por data específica
-        if (filters.data) {
+        if (filters.data && dataFesta) {
           // Criar datas no fuso horário local para evitar problemas de UTC
           const dataFiltro = new Date(filters.data + 'T00:00:00');
           
@@ -114,7 +114,8 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
     const currentYear = currentDate.getFullYear();
     
     return festasFiltradas.filter(festa => {
-      const dataFesta = new Date(festa.dataHora);
+      if (!festa.data) return false;
+      const dataFesta = new Date(festa.data);
       return dataFesta.getMonth() === currentMonth && dataFesta.getFullYear() === currentYear;
     });
   }, [festasFiltradas, currentDate]);
@@ -191,7 +192,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
         
       // Filtra as festas que acontecem NESTE dia
       const festasDoDia = festasDoMes.filter(festa => 
-        new Date(festa.dataHora).getDate() === day
+        festa.data && new Date(festa.data).getDate() === day
       );
       
       const dayStyle = {
@@ -264,10 +265,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
             {festasDoDia.slice(0, 2).map(festa => {
               // Verifica se a festa é na cidade do usuário (para destaque visual)
               const isLocal = cidadeUsuario && festa.cidade.toLowerCase() === cidadeUsuario.toLowerCase();
-              const hora = new Date(festa.dataHora).toLocaleTimeString('pt-BR', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              });
+              const hora = festa.horaInicio || 'Horário não informado';
 
               return (
                 <div 
@@ -401,17 +399,16 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
                 gap: '1rem'
               }}>
                 {festasFiltradas.map((evento) => {
-                  const dataEvento = new Date(evento.dataHora);
-                  const dataFormatada = dataEvento.toLocaleDateString('pt-BR', {
+                  const dataFormatada = evento.data ? new Date(evento.data).toLocaleDateString('pt-BR', {
                     weekday: 'long',
                     day: '2-digit',
                     month: 'long',
                     year: 'numeric'
-                  });
-                  const horaFormatada = dataEvento.toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  });
+                  }) : 'Data não informada';
+                  
+                  const horaFormatada = evento.horaInicio ? 
+                    `${evento.horaInicio}${evento.horaFim ? ` - ${evento.horaFim}` : ''}` : 
+                    'Horário não informado';
                   const isLocal = cidadeUsuario && evento.cidade.toLowerCase() === cidadeUsuario.toLowerCase();
 
                   return (

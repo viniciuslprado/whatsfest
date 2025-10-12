@@ -1,6 +1,6 @@
-// frontend/src/components/FestaDetailsModal.tsx
+// frontend/src/components/modals/FestaDetailsModal.tsx
 import React from 'react';
-import type { Festa } from '../lib/api'; // Importamos o tipo Festa
+import type { Festa } from '../../lib/api'; // Importamos o tipo Festa
 import { FiCalendar, FiMapPin } from 'react-icons/fi';
 
 // Propriedades (Props) que o Modal vai receber
@@ -14,14 +14,14 @@ const FestaDetailsModal: React.FC<ModalProps> = ({ festa, onClose }) => {
   if (!festa) return null;
 
   // Formata a data para ser mais legível
-  const dataFormatada = new Date(festa.dataHora).toLocaleDateString('pt-BR', {
+  const dataFormatada = festa.data ? new Date(festa.data).toLocaleDateString('pt-BR', {
     weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
-  });
+  }) : 'Data não informada';
   
   // Formata a hora
-  const horaFormatada = new Date(festa.dataHora).toLocaleTimeString('pt-BR', {
-    hour: '2-digit', minute: '2-digit'
-  });
+  const horaFormatada = festa.horaInicio ? 
+    `${festa.horaInicio}${festa.horaFim ? ` - ${festa.horaFim}` : ''}` : 
+    'Horário não informado';
 
   // URL para busca no Google Maps
   const mapSearchTerm = encodeURIComponent(festa.local ? `${festa.local}, ${festa.cidade}` : festa.cidade);

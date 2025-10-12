@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import Header from './components/Header';
-import Calendar from './components/Calendar';
-import EventFilters from './components/EventFilters';
-import FlyerCarousel from './components/FlyerCarousel';
-import type { FilterState } from './components/EventFilters';
+import Header from './components/layout/Header';
+import Calendar from './components/events/Calendar';
+import EventFilters from './components/events/EventFilters';
+import FlyerCarousel from './components/ui/FlyerCarousel';
+import type { FilterState } from './components/events/EventFilters';
 import LoginPage from './pages/LoginPage';
-import AdminPage from './pages/AdminPage';
+import AdminPage from './pages/admin/AdminPage';
 import './App.css';
 
 

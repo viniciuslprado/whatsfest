@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Festa } from '../lib/api';
+import type { Festa } from '../../lib/api';
 import { FiCalendar, FiClock, FiMapPin, FiHome, FiStar } from 'react-icons/fi';
 
 interface DayEventsModalProps {
@@ -135,10 +135,9 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {eventos.map((evento) => {
-              const hora = new Date(evento.dataHora).toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit'
-              });
+              const hora = evento.horaInicio ? 
+                `${evento.horaInicio}${evento.horaFim ? ` - ${evento.horaFim}` : ''}` : 
+                'Horário não informado';
 
               return (
                 <div

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { criarNovaFesta } from '../lib/api'; 
-import type { FestaData } from '../lib/api';
+import { criarNovaFesta } from '../../lib/api';
+import type { FestaData } from '../../lib/api';
 import { FaPlus, FaSave, FaSpinner, FaCheckCircle, FaTimesCircle, FaArrowLeft, FaUpload, FaImage, FaCog } from 'react-icons/fa';
 import { FiMapPin } from 'react-icons/fi';
 
@@ -89,6 +89,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
   
   // Estado para controle das abas
   const [activeTab, setActiveTab] = useState<'eventos' | 'flyers' | 'gerenciar'>('eventos');
+  
+  // Estado para controlar visibilidade do campo de flyer
+  const [showFlyerField, setShowFlyerField] = useState(false);
 
   // ========================================
   // FUNÇÕES AUXILIARES
@@ -96,7 +99,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
 
   // Função para atualizar campos do formulário
   const handleInputChange = (key: keyof FestaData, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
+    setFormData((prev: FestaData) => ({ ...prev, [key]: value }));
   };
 
   // Função para buscar cidades
@@ -204,6 +207,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       horaInicio: evento.horaInicio || '',
       horaFim: evento.horaFim || '',
     });
+    
+    // Mostrar campo de flyer se o evento já tem uma URL de imagem
+    setShowFlyerField(Boolean(evento.urlImagemFlyer));
   };
 
   // Função para cancelar edição
@@ -212,6 +218,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
     setEventoSelecionado(null);
     setFormData(initialFormData);
     setDateTimeFields(initialDateTimeFields);
+    setShowFlyerField(false);
   };
 
   // Função para enviar o formulário de evento
@@ -274,6 +281,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       setDateTimeFields(initialDateTimeFields);
       setIsEditing(false);
       setEventoSelecionado(null);
+      setShowFlyerField(false);
       
       // Recarregar lista de eventos sempre após edição/criação
       await carregarEventos();
@@ -1409,6 +1417,96 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                     }}
                   />
                 </div>
+
+                {/* URL da Imagem do Flyer - só aparece quando há uma URL ou quando solicitado */}
+                {(formData.urlImagemFlyer || showFlyerField) && (
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      color: '#374151',
+                      marginBottom: '6px'
+                    }}>
+                      <FaImage style={{ display: 'inline', marginRight: '4px' }} />
+                      URL da Imagem do Flyer
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="url"
+                        value={formData.urlImagemFlyer}
+                        onChange={(e) => handleInputChange('urlImagemFlyer', e.target.value)}
+                        placeholder="https://exemplo.com/imagem-do-flyer.jpg"
+                        style={{
+                          flex: '1',
+                          padding: '12px',
+                          border: '2px solid #e5e7eb',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleInputChange('urlImagemFlyer', '');
+                          setShowFlyerField(false);
+                        }}
+                        style={{
+                          padding: '12px',
+                          background: '#ef4444',
+                          border: 'none',
+                          borderRadius: '8px',
+                          color: 'white',
+                          cursor: 'pointer',
+                          fontSize: '14px'
+                        }}
+                        title="Remover campo de imagem"
+                      >
+                        <FaTimesCircle />
+                      </button>
+                    </div>
+                    {formData.urlImagemFlyer && (
+                      <div style={{
+                        marginTop: '8px',
+                        padding: '8px',
+                        background: '#f0f9ff',
+                        border: '1px solid #bae6fd',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        color: '#0369a1'
+                      }}>
+                        ✓ Preview da imagem será exibido no evento
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Botão para adicionar campo de flyer */}
+                {!formData.urlImagemFlyer && !showFlyerField && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => setShowFlyerField(true)}
+                      style={{
+                        padding: '12px 16px',
+                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: 'white',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      <FaImage />
+                      Adicionar Imagem do Flyer
+                    </button>
+                  </div>
+                )}
 
                 {/* Destaque */}
                 <div style={{
