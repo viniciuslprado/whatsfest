@@ -259,6 +259,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       if (isEditing && eventoSelecionado) {
         // Atualizar evento existente
         const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+        console.log('🔄 Enviando atualização para:', `${apiUrl}/api/v1/festas/${eventoSelecionado.id}`);
+        console.log('📤 Dados enviados:', dadosParaEnvio);
+        
         const response = await fetch(`${apiUrl}/api/v1/festas/${eventoSelecionado.id}`, {
           method: 'PUT',
           headers: {
@@ -268,10 +271,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
           body: JSON.stringify(dadosParaEnvio),
         });
 
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+
         if (!response.ok) {
           const errorText = await response.text();
+          console.log('❌ Error response:', errorText);
           throw new Error(`Erro ao atualizar evento: ${response.status} - ${errorText}`);
         }
+
+        const responseData = await response.json();
+        console.log('✅ Response data:', responseData);
 
         setMessage({ text: '✅ Evento atualizado com sucesso!', type: 'success' });
       } else {
