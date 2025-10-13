@@ -1,7 +1,7 @@
   // ...existing code...
 import React, { useState, useRef, useCallback } from 'react';
-import { criarNovaFesta } from '../../lib/api';
-import type { FestaData } from '../../lib/api';
+import { criarNovaFesta } from '../lib/api';
+import type { FestaData } from '../lib/api';
 import { FaPlus, FaSave, FaSpinner, FaCheckCircle, FaTimesCircle, FaArrowLeft, FaUpload, FaImage, FaCog } from 'react-icons/fa';
 import { FiMapPin } from 'react-icons/fi';
 

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import DayEventsModal from './modals/DayEventsModal';
-import type { Festa } from '../lib/api';
+import DayEventsModal from '../modals/DayEventsModal';
+import type { Festa } from '../../lib/api';
 
 interface CalendarProps {
   festas?: Festa[];
