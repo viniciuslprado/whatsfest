@@ -5,11 +5,15 @@ import { ICreateFestaRequest } from '../types/festa.types';
 const festaController = {
   // Rota pública para listar todas as festas
   async listarFestas(req: Request, res: Response): Promise<void> {
+    console.log('Iniciando listarFestas...');
     try {
       // Pega a cidade do usuário dos parâmetros da URL
       const cidadeUsuario = req.query.cidadeUsuario as string | undefined;
+      console.log('Cidade usuario:', cidadeUsuario);
       
+      console.log('Chamando festaService...');
       const festas = await festaService.listarFestas(cidadeUsuario);
+      console.log('Festas obtidas:', festas.length);
       
       res.json(festas);
     } catch (error) {

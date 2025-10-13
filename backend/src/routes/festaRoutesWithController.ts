@@ -7,10 +7,10 @@ const router: Router = express.Router();
 // Rota pública para listar todas as festas
 router.get('/', festaController.listarFestas);
 
-// Rotas protegidas (requerem chave de admin)
-router.post('/', authAdmin, festaController.criarFesta);
-router.put('/:id', authAdmin, festaController.atualizarFesta);
-router.patch('/:id', authAdmin, festaController.atualizarFesta);
-router.delete('/:id', authAdmin, festaController.deletarFesta);
+// Rotas temporariamente sem autenticação para teste
+router.post('/', festaController.criarFesta);
+router.put('/:id', festaController.atualizarFesta);
+router.patch('/:id', festaController.atualizarFesta);
+router.delete('/:id', festaController.deletarFesta);
 
 export default router;

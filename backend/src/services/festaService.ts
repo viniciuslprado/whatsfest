@@ -6,7 +6,9 @@ const prisma = new PrismaClient();
 const festaService = {
   // Buscar todas as festas, priorizando por localização se fornecida
   async listarFestas(cidadeUsuario?: string) {
+    console.log('Service listarFestas iniciado');
     try {
+      console.log('Executando query no Prisma...');
       const festas = await prisma.festa.findMany({
         orderBy: [
           { destaque: 'desc' }, // Eventos em destaque primeiro
@@ -14,6 +16,7 @@ const festaService = {
           { horaInicio: 'asc' } // E por horário
         ]
       });
+      console.log('Query executada, festas encontradas:', festas.length);
 
       // Se cidade do usuário for fornecida, priorizar eventos da mesma cidade
       if (cidadeUsuario) {
@@ -36,18 +39,14 @@ const festaService = {
   // Criar uma nova festa
   async criarFesta(dadosFesta: ICreateFestaRequest) {
     try {
-      console.log('📝 Service criarFesta - dados recebidos:', dadosFesta);
-      
       // Processar data se fornecida
       let dataProcessada = null;
       if (dadosFesta.data) {
         // Converter string de data para DateTime preservando timezone local
         const [year, month, day] = dadosFesta.data.split('-').map(Number);
         dataProcessada = new Date(year, month - 1, day);
-        console.log('📅 Data processada:', dataProcessada);
       }
 
-      console.log('💾 Tentando criar festa no banco...');
       const novaFesta = await prisma.festa.create({
         data: {
           nome: dadosFesta.nome,
@@ -62,11 +61,9 @@ const festaService = {
           destaque: dadosFesta.destaque || false
         }
       });
-      console.log('✅ Festa criada no banco:', novaFesta);
       return novaFesta;
     } catch (error) {
-      console.error('❌ Erro no service criarFesta:', error);
-      console.error('❌ Stack trace do service:', (error as Error).stack);
+      console.error('Erro no service criarFesta:', error);
       throw new Error('Falha ao criar festa no banco de dados');
     }
   },
