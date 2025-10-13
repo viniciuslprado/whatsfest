@@ -246,7 +246,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': localStorage.getItem('adminKey') || 'ChaveDeAcesso-festa17-J8kF%9zWp$rV3hL6sX'
+            'Authorization': `Bearer ${localStorage.getItem('adminToken') || ''}`
           },
           body: JSON.stringify(dadosParaEnvio),
         });
@@ -314,7 +314,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       const response = await fetch(`${apiUrl}/api/v1/festas/${evento.id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': localStorage.getItem('adminKey') || 'ChaveDeAcesso-festa17-J8kF%9zWp$rV3hL6sX'
+          'Authorization': `Bearer ${localStorage.getItem('adminToken') || ''}`
         }
       });
 

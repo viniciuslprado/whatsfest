@@ -26,9 +26,9 @@ function App() {
   const handleLogin = async (username: string, password: string): Promise<boolean> => {
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL 
-        ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/login`
-        : (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com/api/v1/auth/login' : 'http://localhost:3000/api/v1/auth/login');
-      
+        ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/login`
+        : (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com/api/v1/admin/login' : 'http://localhost:3000/api/v1/admin/login');
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -39,8 +39,8 @@ function App() {
 
       if (response.ok) {
         const data = await response.json();
-        // Armazenar a chave de admin no localStorage para uso nas próximas requisições
-        localStorage.setItem('adminKey', data.adminKey);
+        // Armazenar o token JWT no localStorage para uso nas próximas requisições
+        localStorage.setItem('adminToken', data.token);
         setIsLoggedIn(true);
         setCurrentPage('admin');
         return true;
@@ -55,7 +55,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('adminKey');
+    localStorage.removeItem('adminToken');
     setIsLoggedIn(false);
     setCurrentPage('inicio');
   };
