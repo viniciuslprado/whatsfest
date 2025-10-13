@@ -125,11 +125,14 @@ const FlyerCarousel: React.FC = () => {
       {/* Carousel */}
       <div style={{
         position: 'relative',
-        height: '400px',
+        aspectRatio: '16/9',
+        width: '100%',
         borderRadius: '20px',
         overflow: 'hidden',
         boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-        background: 'white'
+        background: 'white',
+        maxWidth: '900px',
+        margin: '0 auto'
       }}>
         {/* Background Image */}
         <div
