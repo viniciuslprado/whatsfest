@@ -17,13 +17,15 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
       padding: '16px 0',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
     }}>
-      <div style={{ 
-        maxWidth: '1200px', 
-        margin: '0 auto', 
+      <div className="container header-container" style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
         padding: '0 20px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        rowGap: '12px'
       }}>
         {/* Logo */}
         <div 
@@ -43,9 +45,10 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         </div>
 
         {/* Navegação central */}
-        <nav>
+        <nav className="header-nav">
           <ul style={{
             display: 'flex',
+            flexWrap: 'wrap',
             listStyle: 'none',
             gap: '32px',
             margin: 0,

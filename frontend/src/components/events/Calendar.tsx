@@ -278,7 +278,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     background: isLocal 
-                      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' 
+                      ? 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' 
                       : 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
                     color: isLocal ? 'white' : '#374151',
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
@@ -286,11 +286,9 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
                   title={`${festa.nome} - ${hora}${festa.local ? `\nLocal: ${festa.local}` : ''}\nCidade: ${festa.cidade}`}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
-                    e.currentTarget.style.background = '#f0f9ff';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                    e.currentTarget.style.background = 'white';
                   }}
                 >
                   <div style={{
@@ -539,11 +537,11 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
       )}
 
       {/* Calendário Principal */}
-      <div style={{
+      <div className="calendar-responsive" style={{
         width: '100%',
         maxWidth: '100vw',
         margin: '1rem',
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+        background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',
         borderRadius: window.innerWidth < 768 ? '16px' : '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         overflow: 'hidden'
