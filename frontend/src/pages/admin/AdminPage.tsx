@@ -264,18 +264,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
         console.log('✅ Response data:', responseData);
 
         setMessage({ text: '✅ Evento atualizado com sucesso!', type: 'success' });
+        // NÃO limpar formulário ao editar
       } else {
         // Criar novo evento
         await criarNovaFesta(dadosParaEnvio);
         setMessage({ text: '✅ Evento criado com sucesso!', type: 'success' });
+        // Limpar formulário ao criar novo evento
+        setFormData(initialFormData);
+        setDateTimeFields(initialDateTimeFields);
+        setIsEditing(false);
+        setEventoSelecionado(null);
       }
-      
-      // Limpar formulário e estados
-      setFormData(initialFormData);
-      setDateTimeFields(initialDateTimeFields);
-      setIsEditing(false);
-      setEventoSelecionado(null);
-      
       // Recarregar lista de eventos sempre após edição/criação
       await carregarEventos();
     } catch (error) {

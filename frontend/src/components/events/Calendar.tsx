@@ -67,58 +67,45 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
     loadFestas();
   }, []); // Remove dependência de cidadeUsuario 
 
-  // Filtra as festas aplicando apenas os filtros (sem restrição de mês/ano)
+
+  // Filtra as festas para a lista de resultados (acima do calendário)
   const festasFiltradas = useMemo(() => {
     return festas.filter(festa => {
       const dataFesta = festa.data ? new Date(festa.data) : null;
-      
-      // Aplicar filtros se existirem
       if (filters) {
-        // Filtro por nome do evento
         if (filters.nomeEvento && !festa.nome.toLowerCase().includes(filters.nomeEvento.toLowerCase())) {
           return false;
         }
-        
-        // Filtro por cidade
         if (filters.cidade && !festa.cidade.toLowerCase().includes(filters.cidade.toLowerCase())) {
           return false;
         }
-        
-        // Filtro por data específica
         if (filters.data && dataFesta) {
-          // Criar datas no fuso horário local para evitar problemas de UTC
           const dataFiltro = new Date(filters.data + 'T00:00:00');
-          
-          // Comparar apenas os componentes de data (ano, mês, dia) sem conversão UTC
           const festaAno = dataFesta.getFullYear();
           const festaMes = dataFesta.getMonth();
           const festaDia = dataFesta.getDate();
-          
           const filtroAno = dataFiltro.getFullYear();
           const filtroMes = dataFiltro.getMonth();
           const filtroDia = dataFiltro.getDate();
-          
           if (festaAno !== filtroAno || festaMes !== filtroMes || festaDia !== filtroDia) {
             return false;
           }
         }
       }
-      
       return true;
     });
   }, [festas, filters]);
 
-  // Separa as festas do mês atual sendo visualizado (para o calendário)
+  // Para o calendário: mostrar todos os eventos do mês, sem filtro
   const festasDoMes = useMemo(() => {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
-    
-    return festasFiltradas.filter(festa => {
+    return festas.filter(festa => {
       if (!festa.data) return false;
       const dataFesta = new Date(festa.data);
       return dataFesta.getMonth() === currentMonth && dataFesta.getFullYear() === currentYear;
     });
-  }, [festasFiltradas, currentDate]);
+  }, [festas, currentDate]);
   
   // --- 3. Lógica e Funções de Navegação e Modal ---
 
