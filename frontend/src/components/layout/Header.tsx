@@ -1,7 +1,3 @@
-import React, { useState } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa';
-import { FaHome, FaCog, FaInfoCircle, FaPhone } from 'react-icons/fa';
-import { GiPartyPopper } from 'react-icons/gi';
 
 type Page = 'inicio' | 'admin' | 'login' | 'sobre' | 'contato';
 
@@ -13,217 +9,69 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Fecha menu ao navegar
-    const handleNavigate = (page: Page) => {
-      onNavigate(page);
-      setMenuOpen(false);
-    };
+  const handleNavigate = (page: Page) => {
+    onNavigate(page);
+    setMenuOpen(false);
+  };
 
-    return (
-      <header style={{
-        background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',
-        color: 'white',
-        padding: '16px 0',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-      }}>
-        <div className="container header-container" style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '0 20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          rowGap: '12px'
-        }}>
-          {/* Logo */}
-          <div 
-            style={{ cursor: 'pointer' }}
-            onClick={() => onNavigate('inicio')}
-          >
-            <h1 style={{
-              fontSize: '28px',
-              fontWeight: 'bold',
-              margin: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <GiPartyPopper size={32} /> WhatsFest
-            </h1>
-          </div>
-
-          {/* Menu Hamburguer Mobile */}
-          <div className="header-hamburger" style={{ display: 'none', marginLeft: 'auto' }}>
-            <button
-              aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
-              onClick={() => setMenuOpen((v) => !v)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'white',
-                fontSize: '2rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                marginLeft: '16px',
-                zIndex: 20
-              }}
-            >
-              {menuOpen ? <FaTimes /> : <FaBars />}
-            </button>
-          </div>
-
-          {/* Navegação central + Admin agrupado no mobile */}
-          <nav className="header-nav" style={{
-            display: menuOpen ? 'block' : '',
-            position: menuOpen ? 'absolute' : undefined,
-            top: menuOpen ? '64px' : undefined,
-            right: menuOpen ? '16px' : undefined,
-            background: menuOpen ? 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)' : undefined,
-            borderRadius: menuOpen ? '16px' : undefined,
-            boxShadow: menuOpen ? '0 8px 32px rgba(0,0,0,0.15)' : undefined,
-            padding: menuOpen ? '16px 24px' : undefined,
-            zIndex: menuOpen ? 10 : undefined,
-            minWidth: menuOpen ? '180px' : undefined
-          }}>
-            <ul style={{
-              display: menuOpen ? 'flex' : 'flex',
-              flexDirection: menuOpen ? 'column' : 'row',
-              flexWrap: 'wrap',
-              listStyle: 'none',
-              gap: menuOpen ? '12px' : '32px',
-              margin: 0,
-              padding: 0,
-              alignItems: menuOpen ? 'flex-start' : 'center'
-            }}>
-              <li>
-                <button
-                  onClick={() => handleNavigate('inicio')}
-                  style={{
-                    background: currentPage === 'inicio' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-                    border: 'none',
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    fontWeight: currentPage === 'inicio' ? 'bold' : 'normal',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (currentPage !== 'inicio') {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage !== 'inicio') {
-                      e.currentTarget.style.background = 'transparent';
-                    }
-                  }}
-                >
-                  <FaHome /> Início
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavigate('sobre')}
-                  style={{
-                    background: currentPage === 'sobre' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-                    border: 'none',
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    fontWeight: currentPage === 'sobre' ? 'bold' : 'normal',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (currentPage !== 'sobre') {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage !== 'sobre') {
-                      e.currentTarget.style.background = 'transparent';
-                    }
-                  }}
-                >
-                  <FaInfoCircle /> Sobre
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavigate('login')}
-                  style={{
-                    background: currentPage === 'login' ? 'rgba(255, 255, 255, 0.2)' : (menuOpen ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.15)'),
-                    border: menuOpen ? 'none' : '2px solid rgba(255,255,255,0.3)',
-                    color: 'white',
-                    padding: menuOpen ? '8px 16px' : '10px 20px',
-                    borderRadius: menuOpen ? '8px' : '12px',
-                    cursor: 'pointer',
-                    fontSize: menuOpen ? '16px' : '14px',
-                    fontWeight: 'bold',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
-                    if (!menuOpen) e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = menuOpen ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.15)';
-                    if (!menuOpen) e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                >
-                  <FaCog /> Admin
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavigate('contato')}
-                  style={{
-                    background: currentPage === 'contato' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-                    border: 'none',
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    fontWeight: currentPage === 'contato' ? 'bold' : 'normal',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (currentPage !== 'contato') {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage !== 'contato') {
-                      e.currentTarget.style.background = 'transparent';
-                    }
-                  }}
-                >
-                  <FaPhone /> Contato
-                </button>
-              </li>
-            </ul>
-          </nav>
+  return (
+    <header className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white shadow-md">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        {/* Logo */}
+        <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => onNavigate('inicio')}>
+          <GiPartyPopper size={32} />
+          <span className="text-2xl font-extrabold tracking-tight">WhatsFest</span>
         </div>
-      </header>
-    );
+
+        {/* Menu Hamburguer Mobile */}
+        <button
+          className="sm:hidden ml-auto p-2 rounded-full hover:bg-white/10 focus:outline-none"
+          aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          {menuOpen ? <FaTimes size={28} /> : <FaBars size={28} />}
+        </button>
+
+        {/* Navegação */}
+        <nav
+          className={`
+            ${menuOpen ? 'absolute top-16 right-4 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-2xl shadow-2xl p-6 z-50 flex flex-col gap-3 min-w-[180px]' :
+            'hidden sm:flex flex-row gap-6 items-center'}
+          `}
+        >
+          <button
+            onClick={() => handleNavigate('inicio')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
+              ${currentPage === 'inicio' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+          >
+            <FaHome /> Início
+          </button>
+          <button
+            onClick={() => handleNavigate('sobre')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
+              ${currentPage === 'sobre' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+          >
+            <FaInfoCircle /> Sobre
+          </button>
+          <button
+            onClick={() => handleNavigate('login')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border-2 border-white/30 transition-all
+              ${currentPage === 'login' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+          >
+            <FaCog /> Admin
+          </button>
+          <button
+            onClick={() => handleNavigate('contato')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
+              ${currentPage === 'contato' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+          >
+            <FaPhone /> Contato
+          </button>
+        </nav>
+      </div>
+    </header>
+  );
 };
 
+export default Header;
 export default Header;
