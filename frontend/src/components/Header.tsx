@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { GiPartyPopper } from 'react-icons/gi';
-import { FaTimes, FaBars, FaHome, FaInfoCircle, FaCog, FaPhone } from 'react-icons/fa';
+import { FaTimes, FaBars, FaHome, FaInfoCircle, FaCog } from 'react-icons/fa';
 
-type Page = 'inicio' | 'admin' | 'login' | 'sobre' | 'contato';
+type Page = 'inicio' | 'admin' | 'login' | 'sobre';
 
 interface HeaderProps {
   currentPage: Page;
@@ -57,13 +57,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           >
             <FaInfoCircle /> Sobre
           </button>
-          <button
-            onClick={() => handleNavigate('contato')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
-              ${currentPage === 'contato' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
-          >
-            <FaPhone /> Contato
-          </button>
+
           {/* Admin sempre no final */}
           <button
             onClick={() => handleNavigate('login')}

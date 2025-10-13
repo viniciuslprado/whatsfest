@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { MdEvent } from 'react-icons/md';
 import { FiSearch, FiMapPin } from 'react-icons/fi';
-import useLocation from '../../hooks/useLocation';
+import useLocation from '../filters/useLocation';
 
 
 export interface FilterState {

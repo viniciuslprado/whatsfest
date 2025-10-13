@@ -8,11 +8,10 @@ import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import Inicio from './pages/home/inicio';
 import Sobre from './pages/home/sobre';
-import Contato from './pages/home/contato';
 import './App.css';
 
 
-type Page = 'inicio' | 'admin' | 'login' | 'sobre' | 'contato';
+type Page = 'inicio' | 'admin' | 'login' | 'sobre';
 
 function App() {
 
@@ -116,7 +115,7 @@ function App() {
 
         {currentPage === 'sobre' && <Sobre />}
 
-        {currentPage === 'contato' && <Contato />}
+
 
         {currentPage === 'admin' && isLoggedIn && (
           <div style={{ 
