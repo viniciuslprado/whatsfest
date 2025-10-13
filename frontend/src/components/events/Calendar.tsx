@@ -14,6 +14,8 @@ const monthNames = [
 
 
 const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
+  // Debug: verifique se festas está vindo corretamente
+  console.log('Festas recebidas pelo Calendar:', festas);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedDayEvents, setSelectedDayEvents] = useState<Festa[]>([]);
@@ -91,8 +93,8 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
 
   return (
     <>
-      <div className="w-full max-w-full mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden my-8 border border-gray-100">
-        <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white py-4 flex items-center justify-between px-2 sm:px-8">
+  <div className="w-full max-w-full mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden my-8 border-2 border-red-500 border-dashed">
+  <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white py-4 flex items-center justify-between px-2 sm:px-8">
           <button onClick={goToPreviousMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-11 h-11 flex items-center justify-center transition-all">
             &#8592;
           </button>
