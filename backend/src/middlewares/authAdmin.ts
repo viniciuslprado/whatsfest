@@ -1,35 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-// Middleware para verificar se o usuário tem permissão de admin
+const JWT_SECRET = process.env.ADMIN_SECRET_KEY || 'default_jwt_secret';
+
+// Middleware para verificar se o usuário tem permissão de admin via JWT
 const authAdmin = (req: Request, res: Response, next: NextFunction): void => {
   try {
-    const adminKey = req.headers['authorization'];
-    const expectedAdminKey = process.env.ADMIN_SECRET_KEY;
-
-    if (!adminKey) {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
       res.status(401).json({
-        error: 'Chave de administrador não fornecida',
-        message: 'É necessário fornecer a chave de admin no cabeçalho Authorization'
+        error: 'Token não fornecido',
+        message: 'É necessário fornecer o token JWT no cabeçalho Authorization'
       });
       return;
     }
 
-    if (!expectedAdminKey || adminKey !== expectedAdminKey) {
-      res.status(403).json({
-        error: 'Chave de administrador inválida',
-        message: 'A chave fornecida não é válida para operações administrativas'
-      });
-      return;
-    }
-
-    // Se chegou até aqui, a autenticação foi bem-sucedida
+    const token = authHeader.replace('Bearer ', '');
+    jwt.verify(token, JWT_SECRET);
+    // Se chegou até aqui, o token é válido
     next();
   } catch (error) {
     console.error('Erro no middleware authAdmin:', error);
-    res.status(500).json({
-      error: 'Erro interno do servidor',
-      message: 'Falha na verificação de autenticação'
+    res.status(401).json({
+      error: 'Token inválido ou expirado',
+      message: 'Você não tem permissão para acessar esta rota'
     });
+    return;
   }
 };
 
