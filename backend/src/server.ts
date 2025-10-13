@@ -55,7 +55,7 @@ app.get("/api/v1/festas/:id", async (req, res) => {
 // POST criar festa (protegido)
 app.post("/api/v1/festas", authAdmin, async (req, res) => {
   try {
-    const { nome, cidade, data, horaInicio, horaFim, local, urlImagemFlyer, linkVendas, descricaoCurta, destaque } = req.body;
+    const { nome, cidade, data, horaInicio, horaFim, local, linkVendas, descricaoCurta, destaque } = req.body;
     if (!nome || !cidade) return res.status(400).json({ error: "Nome e cidade obrigatórios" });
     let dataProcessada = null;
     if (data) {
@@ -84,7 +84,7 @@ app.post("/api/v1/festas", authAdmin, async (req, res) => {
 // PUT atualizar festa (protegido)
 app.put("/api/v1/festas/:id", authAdmin, async (req, res) => {
   try {
-    const { nome, cidade, data, horaInicio, horaFim, local, urlImagemFlyer, linkVendas, descricaoCurta, destaque } = req.body;
+    const { nome, cidade, data, horaInicio, horaFim, local, linkVendas, descricaoCurta, destaque } = req.body;
     let dataProcessada = null;
     if (data) {
       const [year, month, day] = data.split("-").map(Number);
