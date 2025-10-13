@@ -8,8 +8,8 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState<'eventos' | 'flyers' | 'gerenciar'>('eventos');
 
   return (
-  <div className="min-h-screen w-full m-0 p-0 box-border bg-gradient-to-br from-blue-900 to-pink-400 overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-      <div className="max-w-3xl mx-auto p-5 box-border">
+  <div className="min-h-screen w-full m-0 p-0 box-border bg-gradient-to-br from-fuchsia-700 via-pink-500 to-rose-400 overflow-x-hidden">
+    <div className="max-w-3xl mx-auto p-5 box-border h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 rounded-2xl">
         {/* Cabeçalho */}
         <div className="bg-white/15 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/30 shadow-lg">
           <div className="flex justify-between items-center">
@@ -38,7 +38,7 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
                 }}
                 className={
                   `${activeTab === tab.id
-                    ? 'bg-gradient-to-br from-amber-400 to-orange-400 border-2 border-white/40 font-bold shadow-lg'
+                    ? 'bg-gradient-to-br from-purple-600 via-pink-500 to-pink-400 border-2 border-white/40 font-bold shadow-lg'
                     : 'bg-white/10 border border-white/20 font-normal'} text-white px-5 py-3 rounded-xl cursor-pointer text-sm flex items-center gap-2 transition-all duration-300`
                 }
               >
