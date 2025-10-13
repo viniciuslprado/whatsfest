@@ -59,31 +59,57 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
       );
     }
     for (let day = 1; day <= daysInMonth; day++) {
-      const today = new Date();
-      const isToday =
-        day === today.getDate() &&
-        currentDate.getMonth() === today.getMonth() &&
-        currentDate.getFullYear() === today.getFullYear();
+      // Lógica normal para todos os dias
       const festasDoDia = festasDoMes.filter((festa) => {
         if (!festa.data) return false;
         const dataFesta = new Date(festa.data);
         return dataFesta.getDate() === day;
       });
       const hasEvent = festasDoDia.length > 0;
+
+      // Fundo gradiente suave para dias com evento
+  // Gradiente suavemente mais escuro para melhor contraste
+  const gradBg = hasEvent ? 'bg-gradient-to-br from-pink-100 via-blue-100 to-blue-100' : 'bg-gray-50';
+      // Sombra colorida sutil para dias com evento
+      const shadow = hasEvent ? 'shadow-[0_2px_8px_0_rgba(236,72,153,0.15)]' : '';
+      // Badge (bolinha) no canto superior direito (mobile)
+      const badge = hasEvent ? (
+        <span className="absolute top-1 right-1 bg-pink-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 shadow-sm sm:hidden">
+          {festasDoDia.length}
+        </span>
+      ) : null;
+
       days.push(
         <button
           key={day}
           type="button"
-          className={`flex flex-col items-center justify-center rounded-lg min-h-[44px] aspect-square select-none transition cursor-pointer border
-            ${isToday ? 'border-blue-500 bg-blue-100 shadow-lg ring-2 ring-blue-300' : hasEvent ? 'border-pink-400 bg-pink-100 shadow' : 'border-gray-200 bg-gray-50'}
-            hover:bg-blue-200 hover:border-blue-400 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-pink-400`}
+          className={`relative flex flex-col items-center justify-center rounded-lg min-h-[44px] aspect-square select-none transition cursor-pointer border border-gray-200 ${gradBg} ${shadow}
+            hover:bg-blue-50 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-pink-100`}
           onClick={() => handleDayClick(day, festasDoDia)}
         >
-          <span className={`font-bold text-base leading-none ${isToday ? 'text-blue-800' : hasEvent ? 'text-pink-700' : 'text-gray-700'}`}>{day}</span>
+          {/* Badge no canto superior direito (mobile) */}
+          {badge}
+          {/* Número do dia */}
+          <span className={`font-bold text-base leading-none ${hasEvent ? 'text-pink-700' : 'text-gray-700'} flex items-center justify-center`}>{day}</span>
+          {/* Mobile: número de eventos (como antes, para comparação) */}
           {hasEvent && (
-            <span className="mt-1 text-xs font-semibold bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full px-2 py-0.5 shadow border border-white/70">
+            <span className="mt-1 text-xs font-semibold bg-pink-100 text-pink-700 rounded-full px-2 py-0.5 border border-pink-200 sm:hidden">
               {festasDoDia.length} evento{festasDoDia.length > 1 ? 's' : ''}
             </span>
+          )}
+          {/* Desktop: nomes das festas, um por linha, cada uma em um retângulo cinza claro */}
+          {hasEvent && (
+            <div className="hidden sm:flex flex-col items-center mt-1 w-full gap-1">
+              {festasDoDia.map((festa, idx) => (
+                <span
+                  key={idx}
+                  className="text-xs text-gray-800 font-semibold truncate w-full text-center bg-gray-100 border border-gray-300 rounded-md px-1 py-0.5"
+                  title={festa.nome}
+                >
+                  {festa.nome}
+                </span>
+              ))}
+            </div>
           )}
         </button>
       );
@@ -93,7 +119,7 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
 
   return (
     <>
-  <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden my-8 border border-gray-200">
+  <div className="w-full max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden my-8 border border-gray-200">
     <div className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-600 text-white py-4 flex items-center justify-between px-2 sm:px-8">
       <button onClick={goToPreviousMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-11 h-11 flex items-center justify-center transition-all">
         &#8592;
