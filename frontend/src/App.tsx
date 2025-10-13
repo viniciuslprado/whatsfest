@@ -92,10 +92,7 @@ function App() {
 
   // Páginas com Header
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #fef7ff 0%, #fdf2f8 25%, #ecfdf5 50%, #f0f9ff 75%, #fef7ff 100%)'
-    }}>
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
       <Header 
         currentPage={currentPage}
         onNavigate={handleNavigate}
