@@ -6,9 +6,9 @@ import type { Festa } from './lib/api';
 import type { FilterState } from './components/filters/EventFilters';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
-import Inicio from './pages/Inicio';
-import Sobre from './pages/Sobre';
-import Contato from './pages/Contato';
+import Inicio from './pages/home/inicio';
+import Sobre from './pages/home/sobre';
+import Contato from './pages/home/contato';
 import './App.css';
 
 

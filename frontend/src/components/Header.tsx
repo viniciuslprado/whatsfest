@@ -42,6 +42,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             'hidden sm:flex flex-row gap-6 items-center'}
           `}
         >
+          {/* Botões principais */}
           <button
             onClick={() => handleNavigate('inicio')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
@@ -56,13 +57,14 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           >
             <FaInfoCircle /> Sobre
           </button>
-           <button
+          <button
             onClick={() => handleNavigate('contato')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
               ${currentPage === 'contato' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
           >
             <FaPhone /> Contato
           </button>
+          {/* Admin sempre no final */}
           <button
             onClick={() => handleNavigate('login')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border-2 border-white/30 transition-all
@@ -70,7 +72,6 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           >
             <FaCog /> Admin
           </button>
-         
         </nav>
       </div>
     </header>
