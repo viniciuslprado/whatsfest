@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import './CalendarMobile.css';
 import { buscarFestas } from '../../lib/api'; 
 import type { Festa } from '../../lib/api'
 import FestaDetailsModal from '../modals/FestaDetailsModal'; // Importa o Modal de Detalhes
@@ -649,45 +650,44 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
           </div>
           
           {/* Dias do calendário */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '8px'
-          }}>
-            {loading ? (
-              <div style={{
-                gridColumn: 'span 7',
-                textAlign: 'center',
-                padding: '3rem 0'
-              }}>
+          {/* Dias do calendário - responsivo para mobile */}
+          <div className="calendar-mobile-scroll">
+            <div className="calendar-days-grid">
+              {loading ? (
                 <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '1rem 2rem',
-                  background: '#eff6ff',
-                  borderRadius: '50px'
+                  gridColumn: 'span 7',
+                  textAlign: 'center',
+                  padding: '3rem 0'
                 }}>
                   <div style={{
-                    width: '20px',
-                    height: '20px',
-                    border: '2px solid #3b82f6',
-                    borderTop: '2px solid transparent',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite'
-                  }}></div>
-                  <span style={{ color: '#2563eb', fontWeight: '500' }}>
-                    Carregando eventos...
-                  </span>
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '1rem 2rem',
+                    background: '#eff6ff',
+                    borderRadius: '50px'
+                  }}>
+                    <div style={{
+                      width: '20px',
+                      height: '20px',
+                      border: '2px solid #3b82f6',
+                      borderTop: '2px solid transparent',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }}></div>
+                    <span style={{ color: '#2563eb', fontWeight: '500' }}>
+                      Carregando eventos...
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              renderCalendarDays()
-            )}
+              ) : (
+                renderCalendarDays()
+              )}
+            </div>
           </div>
         </div>
       </div>
-
+        className="calendar-day-cell"
       <style>
         {`
           @keyframes spin {

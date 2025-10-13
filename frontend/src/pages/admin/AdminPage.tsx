@@ -180,14 +180,23 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
   const iniciarEdicao = (evento: Evento) => {
     setEventoSelecionado(evento);
     setIsEditing(true);
-    
+
     // Mudar para a aba de gerenciar para mostrar o formulário de edição
     setActiveTab('gerenciar');
-    
-    // Preencher formulário com dados do evento
+
+    // Formatar data para YYYY-MM-DD se necessário
+    let dataFormatada = '';
+    if (evento.data) {
+      const d = new Date(evento.data);
+      // Ajuste para fuso horário local
+      const off = d.getTimezoneOffset();
+      const localDate = new Date(d.getTime() - off * 60 * 1000);
+      dataFormatada = localDate.toISOString().slice(0, 10);
+    }
+
     setFormData({
       nome: evento.nome,
-      data: evento.data,
+      data: dataFormatada,
       horaInicio: evento.horaInicio,
       horaFim: evento.horaFim,
       cidade: evento.cidade,
@@ -197,14 +206,12 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       descricaoCurta: evento.descricaoCurta || '',
       destaque: evento.destaque || false,
     });
-    
-    // Preencher campos de data e hora
+
     setDateTimeFields({
-      data: evento.data || '',
+      data: dataFormatada,
       horaInicio: evento.horaInicio || '',
       horaFim: evento.horaFim || '',
     });
-    
   };
 
   // Função para cancelar edição
