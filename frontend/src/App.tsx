@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/layout/Header';
 import Calendar from './components/events/Calendar';
+import { buscarFestas } from './lib/api';
+import type { Festa } from './lib/api';
 import EventFilters from './components/events/EventFilters';
 import FlyerCarousel from './components/ui/FlyerCarousel';
 import type { FilterState } from './components/events/EventFilters';
@@ -12,6 +14,8 @@ import './App.css';
 type Page = 'inicio' | 'admin' | 'login' | 'sobre' | 'contato';
 
 function App() {
+
+
   const [currentPage, setCurrentPage] = useState<Page>('inicio');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
@@ -22,6 +26,10 @@ function App() {
     userLongitude: undefined,
     maxDistance: undefined
   });
+  const [festas, setFestas] = useState<Festa[]>([]);
+  useEffect(() => {
+    buscarFestas().then(setFestas);
+  }, []);
 
   const handleLogin = async (username: string, password: string): Promise<boolean> => {
     try {
@@ -107,7 +115,13 @@ function App() {
               onFiltersChange={handleFiltersChange}
             />
             
-            <Calendar />
+            {/* Busca eventos do banco e passa para o Calendar */}
+            <Calendar festas={festas} />
+  // Busca eventos do banco e passa para o Calendar
+  const [festas, setFestas] = useState<Festa[]>([]);
+  useEffect(() => {
+    buscarFestas().then(setFestas);
+  }, []);
           </div>
         )}
 

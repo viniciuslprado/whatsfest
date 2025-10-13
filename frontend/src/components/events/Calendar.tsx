@@ -72,14 +72,14 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
         <button
           key={day}
           type="button"
-          className={`flex flex-col items-center justify-center rounded-lg min-h-[44px] aspect-square select-none transition cursor-pointer border
-            ${isToday ? 'border-blue-500 bg-blue-50 shadow-md ring-2 ring-blue-300' : hasEvent ? 'border-pink-400 bg-pink-50 shadow-sm' : 'border-gray-200 bg-white'}
+          className={`flex flex-col items-center justify-center rounded-full min-h-[44px] aspect-square select-none transition cursor-pointer border-2
+            ${isToday ? 'border-blue-500 bg-gradient-to-br from-blue-100 to-blue-200 shadow-lg ring-2 ring-blue-300' : hasEvent ? 'border-pink-400 bg-gradient-to-br from-pink-100 to-purple-100 shadow' : 'border-gray-200 bg-gray-50'}
             hover:scale-105 hover:z-10 focus:outline-none focus:ring-2 focus:ring-pink-400`}
           onClick={() => handleDayClick(day, festasDoDia)}
         >
-          <span className={`font-semibold text-base leading-none ${isToday ? 'text-blue-700' : hasEvent ? 'text-pink-700' : 'text-gray-500'}`}>{day}</span>
+          <span className={`font-bold text-base leading-none ${isToday ? 'text-blue-700' : hasEvent ? 'text-pink-700' : 'text-gray-400'}`}>{day}</span>
           {hasEvent && (
-            <span className="mt-1 text-[11px] font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full px-2 py-0.5 shadow">
+            <span className="mt-1 text-[11px] font-semibold bg-pink-500/90 text-white rounded-full px-2 py-0.5 shadow-sm border border-white">
               {festasDoDia.length} evento{festasDoDia.length > 1 ? 's' : ''}
             </span>
           )}
@@ -91,20 +91,20 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
 
   return (
     <>
-      <div className="w-full max-w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden my-4 border border-gray-100">
+      <div className="w-full max-w-full mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden my-6 border border-gray-200">
         <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white py-3 flex items-center justify-between px-2 sm:px-8">
-          <button onClick={goToPreviousMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-9 h-9 flex items-center justify-center transition">
+          <button onClick={goToPreviousMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-10 h-10 flex items-center justify-center transition">
             &#8592;
           </button>
-          <h2 className="text-lg sm:text-2xl font-bold text-center tracking-tight drop-shadow">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
-          <button onClick={goToNextMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-9 h-9 flex items-center justify-center transition">
+          <h2 className="text-xl sm:text-3xl font-bold text-center tracking-tight drop-shadow-lg">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
+          <button onClick={goToNextMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-10 h-10 flex items-center justify-center transition">
             &#8594;
           </button>
         </div>
-        <div className="p-2 sm:p-4">
-          <div className="grid grid-cols-7 gap-1 mb-1">
+        <div className="p-2 sm:p-6">
+          <div className="grid grid-cols-7 gap-1 mb-2">
             {daysOfWeek.map((day) => (
-              <div key={day} className="py-1 text-center text-xs font-semibold text-gray-600 bg-gray-50 rounded-lg tracking-tight">
+              <div key={day} className="py-2 text-center text-xs font-bold text-gray-600 bg-gray-100 rounded-full tracking-tight">
                 {day}
               </div>
             ))}
