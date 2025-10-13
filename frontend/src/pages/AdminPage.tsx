@@ -8,7 +8,7 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState<'eventos' | 'flyers' | 'gerenciar'>('eventos');
 
   return (
-  <div className="min-h-screen w-full m-0 p-0 box-border bg-gradient-to-br from-blue-900 via-purple-500 to-pink-400 overflow-x-hidden overflow-y-auto">
+  <div className="min-h-screen w-full m-0 p-0 box-border bg-gradient-to-br from-blue-900 to-pink-400 overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
       <div className="max-w-3xl mx-auto p-5 box-border">
         {/* Cabeçalho */}
         <div className="bg-white/15 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/30 shadow-lg">
