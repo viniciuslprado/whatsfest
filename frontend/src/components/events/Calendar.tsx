@@ -195,7 +195,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
         festa.data && new Date(festa.data).getDate() === day
       );
       
-      const dayStyle = {
+      const dayStyle: React.CSSProperties = {
         padding: '8px',
         minHeight: '80px',
         color: '#374151',
@@ -205,7 +205,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
         overflow: 'hidden',
         cursor: festasDoDia.length > 0 ? 'pointer' : 'default',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'column' as React.CSSProperties['flexDirection'],
         gap: '4px',
         ...(isToday 
           ? {
