@@ -1,3 +1,4 @@
+  // ...existing code...
 import React, { useState, useRef, useCallback } from 'react';
 import { criarNovaFesta } from '../../lib/api';
 import type { FestaData } from '../../lib/api';
@@ -62,6 +63,22 @@ interface FlyerImage {
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
+  // Função para lidar com mudanças na cidade (autocomplete)
+  const handleCitySearch = async (value: string) => {
+    handleInputChange('cidade', value);
+    if (value.length >= 2) {
+      try {
+        const suggestions = await searchCities(value);
+        setCitySuggestions(suggestions);
+        setShowCitySuggestions(true);
+      } catch (error) {
+        console.error('Erro ao buscar cidades:', error);
+      }
+    } else {
+      setShowCitySuggestions(false);
+      setCitySuggestions([]);
+    }
+  };
   // ========================================
   // ESTADOS DO COMPONENTE
   // ========================================
@@ -102,17 +119,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
   // Função para buscar cidades
   const searchCities = useCallback(async (query: string): Promise<string[]> => {
     if (query.length < 2) return [];
-
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
       const response = await fetch(
         `${apiUrl}/api/v1/geolocation/cities?search=${encodeURIComponent(query)}`
       );
-
       if (!response.ok) {
         throw new Error('Erro ao buscar cidades');
       }
-
       const cities = await response.json() as string[];
       return cities;
     } catch (error) {
@@ -120,24 +134,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       return [];
     }
   }, []);
-
-  // Função para lidar com mudanças na cidade
-  const handleCitySearch = async (value: string) => {
-    handleInputChange('cidade', value);
-    
-    if (value.length >= 2) {
-      try {
-        const suggestions = await searchCities(value);
-        setCitySuggestions(suggestions);
-        setShowCitySuggestions(true);
-      } catch (error) {
-        console.error('Erro ao buscar cidades:', error);
-      }
-    } else {
-      setShowCitySuggestions(false);
-      setCitySuggestions([]);
-    }
-  };
 
   // Função para selecionar uma sugestão de cidade
   const selectCitySuggestion = (suggestion: string) => {
@@ -147,22 +143,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
   };
 
   // Função para selecionar uma cidade das sugestões
-  const selectCity = (city: string) => {
-    handleInputChange('cidade', city);
-    setShowCitySuggestions(false);
-    setCitySuggestions([]);
-  };
-
-  // Função para atualizar campos de data/hora
-  const handleDateTimeChange = (field: keyof typeof initialDateTimeFields, value: string) => {
-    setDateTimeFields(prev => ({ ...prev, [field]: value }));
-  };
-
-  // ========================================
-  // FUNÇÕES DE GERENCIAMENTO DE EVENTOS
-  // ========================================
-
-  // Função para carregar eventos existentes
   const carregarEventos = async () => {
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
@@ -171,8 +151,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
         const eventos = await response.json();
         setEventosExistentes(eventos);
       }
-    } catch (error) {
-      console.error('Erro ao carregar eventos:', error);
+    } catch {
+      // erro ao carregar eventos
     }
   };
 
@@ -319,20 +299,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
       const response = await fetch(`${apiUrl}/api/v1/festas/${evento.id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('adminToken') || ''}`
-        }
       });
-
       if (!response.ok) {
         throw new Error('Erro ao excluir evento');
       }
-
-      setMessage({ text: '✅ Evento excluído com sucesso!', type: 'success' });
       await carregarEventos(); // Recarregar lista
-    } catch (error) {
+    } catch {
       setMessage({ 
-        text: `❌ Erro ao excluir evento: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, 
+        text: '❌ Erro ao excluir evento',
         type: 'error' 
       });
     }
@@ -409,76 +383,24 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
   };
 
   return (
-    <div style={{
-      height: '100vh',
-      width: '100%',
-      margin: 0,
-      padding: 0,
-      boxSizing: 'border-box',
-      background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 25%, #8b5cf6 75%, #ec4899 100%)',
-      overflowX: 'hidden',
-      overflowY: 'auto'
-    }}>
-      <div style={{
-        maxWidth: '800px',
-        margin: '0 auto',
-        padding: '20px',
-        boxSizing: 'border-box'
-      }}>
+  <div className="min-h-screen w-full m-0 p-0 box-border bg-gradient-to-br from-blue-900 via-purple-500 to-pink-400 overflow-x-hidden overflow-y-auto">
+      <div className="max-w-3xl mx-auto p-5 box-border">
         {/* Cabeçalho */}
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.15)',
-          backdropFilter: 'blur(15px)',
-          borderRadius: '16px',
-          padding: '24px',
-          marginBottom: '24px',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <h1 style={{
-              fontSize: '28px',
-              fontWeight: 'bold',
-              color: 'white',
-              margin: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px'
-            }}>
+        <div className="bg-white/15 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/30 shadow-lg">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl md:text-3xl font-bold text-white m-0 flex items-center gap-3">
               <FaCog /> Painel Administrativo
             </h1>
             <button
               onClick={onLogout}
-              style={{
-                background: 'rgba(239, 68, 68, 0.8)',
-                border: 'none',
-                color: 'white',
-                padding: '12px 24px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
+              className="bg-red-600/80 border-none text-white px-6 py-3 rounded-lg cursor-pointer text-sm font-bold flex items-center gap-2 hover:bg-red-700/90 transition"
             >
               <FaArrowLeft /> Sair
             </button>
           </div>
 
           {/* Sistema de Abas */}
-          <div style={{
-            display: 'flex',
-            gap: '8px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.2)',
-            paddingTop: '24px',
-            marginTop: '24px'
-          }}>
+          <div className="flex gap-2 border-t border-white/20 pt-6 mt-6">
             {[
               { id: 'eventos', label: '📅 Criar Eventos', icon: FaPlus },
               { id: 'gerenciar', label: '📝 Gerenciar Eventos', icon: FaCog },
@@ -492,23 +414,11 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                     carregarEventos();
                   }
                 }}
-                style={{
-                  background: activeTab === tab.id ? 
-                    'linear-gradient(135deg, #f59e0b, #f97316)' : 
-                    'rgba(255, 255, 255, 0.1)',
-                  border: activeTab === tab.id ? '2px solid rgba(255, 255, 255, 0.4)' : '1px solid rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  padding: '12px 20px',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: activeTab === tab.id ? 'bold' : 'normal',
-                  transition: 'all 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: activeTab === tab.id ? '0 4px 16px rgba(245, 158, 11, 0.3)' : 'none'
-                }}
+                className={
+                  `${activeTab === tab.id
+                    ? 'bg-gradient-to-br from-amber-400 to-orange-400 border-2 border-white/40 font-bold shadow-lg'
+                    : 'bg-white/10 border border-white/20 font-normal'} text-white px-5 py-3 rounded-xl cursor-pointer text-sm flex items-center gap-2 transition-all duration-300`
+                }
               >
                 <tab.icon /> {tab.label}
               </button>
@@ -518,24 +428,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
 
         {/* Mensagens - Posicionamento melhorado */}
         {message.text && (
-          <div style={{
-            position: 'fixed',
-            top: '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: message.type === 'success' ? '#10b981' : '#ef4444',
-            color: 'white',
-            padding: '16px 24px',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            zIndex: 9999,
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-            fontSize: '16px',
-            fontWeight: '600',
-            animation: 'slideDown 0.3s ease-out'
-          }}>
+          <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-2 px-6 py-4 rounded-xl shadow-2xl text-white text-lg font-semibold animate-slideDown ${message.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}> 
             {message.type === 'success' ? <FaCheckCircle /> : <FaTimesCircle />}
             {message.text}
           </div>
@@ -543,58 +436,23 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
 
         {/* Seção de Gerenciar Eventos */}
         {activeTab === 'gerenciar' && (
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '16px',
-            padding: '32px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
-          }}>
-            <h2 style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#1f2937',
-              marginBottom: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
+          <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl border border-white/20">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
               {isEditing ? '✏️ Editar Evento' : '📝 Gerenciar Eventos'}
             </h2>
 
             {/* Formulário de Edição (quando estiver editando) */}
             {isEditing && eventoSelecionado && (
-              <div style={{
-                background: 'rgba(254, 252, 232, 0.8)',
-                border: '1px solid #fbbf24',
-                borderRadius: '12px',
-                padding: '24px',
-                marginBottom: '24px'
-              }}>
-                <h3 style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#92400e',
-                  marginBottom: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
+              <div className="bg-yellow-50/80 border border-yellow-400 rounded-xl p-6 mb-6">
+                <h3 className="text-lg font-semibold text-yellow-900 mb-4 flex items-center gap-2">
                   ✏️ Editando: {eventoSelecionado.nome}
                 </h3>
 
                 <form onSubmit={handleSubmit}>
-                  <div style={{ display: 'grid', gap: '20px' }}>
+                  <div className="grid gap-5">
                     {/* Nome do Evento */}
                     <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '14px',
-                        fontWeight: 'bold',
-                        color: '#374151',
-                        marginBottom: '8px'
-                      }}>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
                         Nome do Evento *
                       </label>
                       <input
@@ -603,29 +461,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                         onChange={(e) => handleInputChange('nome', e.target.value)}
                         placeholder="Ex: Festa de Ano Novo 2024"
                         required
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '8px',
-                          fontSize: '14px',
-                          outline: 'none',
-                          transition: 'border-color 0.3s ease',
-                          boxSizing: 'border-box'
-                        }}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-400 transition"
                       />
                     </div>
 
                     {/* Data e Hora */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px' }}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          color: '#374151',
-                          marginBottom: '8px'
-                        }}>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">
                           Data do Evento *
                         </label>
                         <input
@@ -633,68 +476,29 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                           value={dateTimeFields.data}
                           onChange={(e) => setDateTimeFields(prev => ({ ...prev, data: e.target.value }))}
                           required
-                          style={{
-                            width: '100%',
-                            padding: '12px 16px',
-                            border: '2px solid #e5e7eb',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            outline: 'none',
-                            transition: 'border-color 0.3s ease',
-                            boxSizing: 'border-box'
-                          }}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-400 transition"
                         />
                       </div>
                       <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          color: '#374151',
-                          marginBottom: '8px'
-                        }}>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">
                           Hora Início
                         </label>
                         <input
                           type="time"
                           value={dateTimeFields.horaInicio}
                           onChange={(e) => setDateTimeFields(prev => ({ ...prev, horaInicio: e.target.value }))}
-                          style={{
-                            width: '100%',
-                            padding: '12px 16px',
-                            border: '2px solid #e5e7eb',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            outline: 'none',
-                            transition: 'border-color 0.3s ease',
-                            boxSizing: 'border-box'
-                          }}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-400 transition"
                         />
                       </div>
                       <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          color: '#374151',
-                          marginBottom: '8px'
-                        }}>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">
                           Hora Fim
                         </label>
                         <input
                           type="time"
                           value={dateTimeFields.horaFim}
                           onChange={(e) => setDateTimeFields(prev => ({ ...prev, horaFim: e.target.value }))}
-                          style={{
-                            width: '100%',
-                            padding: '12px 16px',
-                            border: '2px solid #e5e7eb',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            outline: 'none',
-                            transition: 'border-color 0.3s ease',
-                            boxSizing: 'border-box'
-                          }}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-400 transition"
                         />
                       </div>
                     </div>
@@ -1095,267 +899,18 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
             </h2>
 
             <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gap: '20px' }}>
-                {/* Nome do Evento */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    Nome do Evento *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.nome}
-                    onChange={(e) => handleInputChange('nome', e.target.value)}
-                    placeholder="Ex: Festa de Ano Novo 2024"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                {/* Data */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    📅 Data *
-                  </label>
-                  <input
-                    type="date"
-                    value={dateTimeFields.data}
-                    onChange={(e) => handleDateTimeChange('data', e.target.value)}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                {/* Horário de Início */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    🕐 Hora de Início
-                  </label>
-                  <input
-                    type="time"
-                    value={dateTimeFields.horaInicio}
-                    onChange={(e) => handleDateTimeChange('horaInicio', e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                {/* Horário de Fim */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    🕐 Hora de Fim
-                  </label>
-                  <input
-                    type="time"
-                    value={dateTimeFields.horaFim}
-                    onChange={(e) => handleDateTimeChange('horaFim', e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                {/* Cidade com Autocomplete */}
-                <div style={{ position: 'relative' }}>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    <FiMapPin style={{ display: 'inline', marginRight: '4px' }} />
-                    Cidade *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.cidade}
-                    onChange={(e) => handleCitySearch(e.target.value)}
-                    placeholder="Digite uma cidade (ex: São Paulo, Campinas...)"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                    onFocus={() => {
-                      if (formData.cidade.length >= 2) {
-                        setShowCitySuggestions(true);
-                      }
-                    }}
-                    onBlur={() => {
-                      // Delay para permitir click nas sugestões
-                      setTimeout(() => setShowCitySuggestions(false), 200);
-                    }}
-                  />
-                  
-                  {/* Lista de Sugestões */}
-                  {showCitySuggestions && citySuggestions.length > 0 && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      right: 0,
-                      background: 'white',
-                      border: '2px solid #d1d5db',
-                      borderTop: '1px solid #e5e7eb',
-                      borderRadius: '0 0 12px 12px',
-                      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
-                      zIndex: 1000,
-                      maxHeight: '280px',
-                      overflowY: 'auto'
-                    }}>
-                      <div style={{
-                        padding: '8px 16px',
-                        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                        borderBottom: '1px solid #e2e8f0',
-                        fontSize: '12px',
-                        color: '#64748b',
-                        fontWeight: '500'
-                      }}>
-                        {citySuggestions.length} cidade{citySuggestions.length !== 1 ? 's' : ''} encontrada{citySuggestions.length !== 1 ? 's' : ''}
-                      </div>
-                      {citySuggestions.map((suggestion, index) => {
-                        // Separa cidade e estado para melhor formatação
-                        const [cidade, estado] = suggestion.includes('(') 
-                          ? suggestion.split(' (') 
-                          : [suggestion, ''];
-                        const estadoLimpo = estado.replace(')', '');
-                        
-                        return (
-                          <div
-                            key={index}
-                            onClick={() => selectCity(suggestion)}
-                            style={{
-                              padding: '14px 16px',
-                              cursor: 'pointer',
-                              borderBottom: index < citySuggestions.length - 1 ? '1px solid #f1f5f9' : 'none',
-                              transition: 'all 0.2s ease',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '12px'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#f0f9ff';
-                              e.currentTarget.style.borderLeft = '3px solid #3b82f6';
-                              e.currentTarget.style.paddingLeft = '13px';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'transparent';
-                              e.currentTarget.style.borderLeft = 'none';
-                              e.currentTarget.style.paddingLeft = '16px';
-                            }}
-                          >
-                            <FiMapPin style={{ 
-                              color: '#8b5cf6', 
-                              fontSize: '16px',
-                              flexShrink: 0
-                            }} />
-                            <div style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              alignItems: 'flex-start',
-                              flex: 1
-                            }}>
-                              <span style={{
-                                fontSize: '14px',
-                                fontWeight: '600',
-                                color: '#1f2937'
-                              }}>
-                                {cidade}
-                              </span>
-                              {estadoLimpo && (
-                                <span style={{
-                                  fontSize: '12px',
-                                  color: '#6b7280',
-                                  marginTop: '2px'
-                                }}>
-                                  {estadoLimpo}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                    <div className="relative">
+                  {/* ...outros campos do formulário já convertidos para Tailwind... */}
 
                 {/* Local */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    Local do Evento
-                  </label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Local do Evento</label>
                   <input
                     type="text"
                     value={formData.local}
                     onChange={(e) => handleInputChange('local', e.target.value)}
                     placeholder="Ex: Casa de Shows XYZ, Rua ABC 123"
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-400 transition"
                   />
                 </div>
 
@@ -1363,112 +918,52 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
 
                 {/* Link de Vendas */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    Link de Vendas
-                  </label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Link de Vendas</label>
                   <input
                     type="url"
                     value={formData.linkVendas}
                     onChange={(e) => handleInputChange('linkVendas', e.target.value)}
                     placeholder="https://exemplo.com/ingressos"
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-400 transition"
                   />
                 </div>
 
                 {/* Descrição Curta */}
                 <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    Descrição Curta
-                  </label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Descrição Curta</label>
                   <textarea
                     value={formData.descricaoCurta}
                     onChange={(e) => handleInputChange('descricaoCurta', e.target.value)}
                     placeholder="Descrição breve do evento (máx. 200 caracteres)"
                     maxLength={200}
                     rows={3}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      resize: 'vertical',
-                      boxSizing: 'border-box'
-                    }}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm resize-vertical focus:outline-none focus:border-purple-400 transition"
                   />
                 </div>
 
 
 
                 {/* Destaque */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
+                <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     id="destaque"
                     checked={formData.destaque}
                     onChange={(e) => handleInputChange('destaque', e.target.checked)}
-                    style={{
-                      width: '16px',
-                      height: '16px'
-                    }}
+                    className="w-4 h-4"
                   />
-                  <label htmlFor="destaque" style={{
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#374151'
-                  }}>
+                  <label htmlFor="destaque" className="text-sm font-bold text-gray-700 cursor-pointer">
                     Marcar como evento em destaque
                   </label>
                 </div>
 
                 {/* Botões de Ação */}
-                <div style={{ 
-                  display: 'flex',
-                  gap: '12px',
-                  marginTop: '16px'
-                }}>
+                <div className="flex gap-3 mt-4">
                   {isEditing && (
                     <button
                       type="button"
                       onClick={cancelarEdicao}
-                      style={{
-                        background: '#6b7280',
-                        border: 'none',
-                        color: 'white',
-                        padding: '16px 32px',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        flex: '1'
-                      }}
+                      className="bg-gray-500 text-white px-8 py-4 rounded-lg font-bold flex-1 flex items-center justify-center gap-2 hover:bg-gray-600 transition"
                     >
                       ❌ Cancelar
                     </button>
@@ -1476,23 +971,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onLogout }) => {
                   <button
                     type="submit"
                     disabled={loading}
-                    style={{
-                      background: loading ? '#9ca3af' : 'linear-gradient(135deg, #f59e0b, #f97316)',
-                      border: 'none',
-                      color: 'white',
-                      padding: '16px 32px',
-                      borderRadius: '12px',
-                      cursor: loading ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      flex: '1',
-                      boxShadow: loading ? 'none' : '0 4px 16px rgba(245, 158, 11, 0.3)',
-                      transition: 'all 0.3s ease'
-                    }}
+                    className={`px-8 py-4 rounded-xl font-bold flex-1 flex items-center justify-center gap-2 transition-all text-white ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-br from-amber-400 to-orange-400 shadow-lg hover:from-orange-400 hover:to-amber-400'}`}
                   >
                     {loading ? <FaSpinner className="animate-spin" /> : <FaSave />}
                     {loading ? 

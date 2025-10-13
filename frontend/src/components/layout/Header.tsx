@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { GiPartyPopper } from 'react-icons/gi';
+import { FaTimes, FaBars, FaHome, FaInfoCircle, FaCog, FaPhone } from 'react-icons/fa';
 
 type Page = 'inicio' | 'admin' | 'login' | 'sobre' | 'contato';
 
@@ -73,5 +76,4 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
   );
 };
 
-export default Header;
 export default Header;
