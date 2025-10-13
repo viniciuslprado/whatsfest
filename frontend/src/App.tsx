@@ -107,7 +107,7 @@ function App() {
               onFiltersChange={handleFiltersChange}
             />
             
-            <Calendar filters={filters} />
+            <Calendar />
           </div>
         )}
 
