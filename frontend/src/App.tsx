@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/layout/Header';
 import Calendar from './components/events/Calendar';
 import { buscarFestas } from './lib/api';
