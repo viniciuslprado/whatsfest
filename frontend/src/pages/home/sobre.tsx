@@ -1,4 +1,4 @@
-import { FaEnvelope } from 'react-icons/fa';
+import { FaEnvelope, FaInstagram } from 'react-icons/fa';
 
 const Sobre: React.FC = () => (
   <section className="max-w-3xl mx-auto py-12 px-4">
@@ -7,7 +7,7 @@ const Sobre: React.FC = () => (
       O WhatsFest é uma plataforma independente para divulgação de festas, eventos e rolês pelo Brasil. Nosso objetivo é conectar pessoas a experiências inesquecíveis, facilitando o acesso à programação cultural e de entretenimento da sua cidade.
     </p>
     <p className="mb-4 text-lg text-gray-700">
-      O site é colaborativo e aberto para produtores, organizadores e público em geral sugerirem eventos. Não vendemos ingressos, apenas divulgamos!
+      O site é colaborativo e aberto para produtores, organizadores e público em geral sugerirem eventos.
     </p>
     <p className="mb-4 text-lg text-gray-700">
       Para dúvidas, sugestões ou parcerias, entre em contato:
@@ -30,6 +30,15 @@ const Sobre: React.FC = () => (
       rel="noopener noreferrer"
     >
       <FaEnvelope /> whatsfests@gmail.com
+    </a>
+    {/* Botão do Instagram */}
+    <a
+      href="https://instagram.com/whatsfest"
+      className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-br from-pink-500 to-yellow-400 hover:from-pink-600 hover:to-yellow-500 text-white font-bold text-lg shadow transition mb-4 ml-2"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <FaInstagram /> @whatsfests
     </a>
   </section>
 );
