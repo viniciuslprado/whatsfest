@@ -4,8 +4,11 @@ import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 import authAdmin from './middlewares/authAdmin';
 import { adminLogin } from './controllers/adminController';
+import cidadesData from './data/cidadesBrasil.js';
 
 dotenv.config();
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +16,20 @@ const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use(cors());
+
+// Rota para autocomplete de cidades
+app.get('/api/v1/geolocation/cities', (req, res) => {
+  const search = (req.query.search || '').toString().toLowerCase();
+  if (!search || search.length < 2) return res.json([]);
+  const cidadesEstaticas: Array<{ nome: string, estado: string }> = cidadesData.cidadesEstaticas;
+  const results = cidadesEstaticas
+    .filter((c) =>
+      `${c.nome} (${c.estado})`.toLowerCase().includes(search)
+    )
+    .map((c) => `${c.nome} (${c.estado})`)
+    .slice(0, 10); // Limita a 10 sugestões
+  res.json(results);
+});
 
 // Rota de login admin
 app.post('/api/v1/admin/login', adminLogin);
@@ -55,8 +72,13 @@ app.get("/api/v1/festas/:id", async (req, res) => {
 // POST criar festa (protegido)
 app.post("/api/v1/festas", authAdmin, async (req, res) => {
   try {
-    const { nome, cidade, data, horaInicio, horaFim, local, linkVendas, descricaoCurta, destaque } = req.body;
-    if (!nome || !cidade) return res.status(400).json({ error: "Nome e cidade obrigatórios" });
+  const { nome, cidade, data, horaInicio, horaFim, local, linkVendas, descricaoCurta, destaque } = req.body;
+  if (!nome || !cidade) return res.status(400).json({ error: "Nome e cidade obrigatórios" });
+  // Padroniza cidade para 'Nome (UF)'
+  const cidadeFormatada = cidade.replace(/\s*-\s*/g, ' ').replace(/\s*\(([^)]+)\)$/, '').trim();
+  const ufMatch = cidade.match(/\(([A-Z]{2})\)$/);
+  const uf = ufMatch ? ufMatch[1] : '';
+  const cidadeFinal = uf ? `${cidadeFormatada} (${uf})` : cidadeFormatada;
     let dataProcessada = null;
     if (data) {
       const [year, month, day] = data.split("-").map(Number);
@@ -65,7 +87,7 @@ app.post("/api/v1/festas", authAdmin, async (req, res) => {
     const festa = await prisma.festa.create({
       data: {
         nome,
-        cidade,
+        cidade: cidadeFinal,
         data: dataProcessada,
         horaInicio: horaInicio || null,
         horaFim: horaFim || null,
@@ -90,11 +112,16 @@ app.put("/api/v1/festas/:id", authAdmin, async (req, res) => {
       const [year, month, day] = data.split("-").map(Number);
       dataProcessada = new Date(year, month - 1, day);
     }
+    // Padroniza cidade para 'Nome (UF)'
+    const cidadeFormatada = cidade.replace(/\s*-\s*/g, ' ').replace(/\s*\(([^)]+)\)$/, '').trim();
+    const ufMatch = cidade.match(/\(([A-Z]{2})\)$/);
+    const uf = ufMatch ? ufMatch[1] : '';
+    const cidadeFinal = uf ? `${cidadeFormatada} (${uf})` : cidadeFormatada;
     const festa = await prisma.festa.update({
       where: { id: Number(req.params.id) },
       data: {
         nome,
-        cidade,
+        cidade: cidadeFinal,
         data: dataProcessada,
         horaInicio: horaInicio || null,
         horaFim: horaFim || null,

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const JWT_SECRET = process.env.JWT_SECRET || 'jwt_secret_default';
+const JWT_SECRET = process.env.ADMIN_SECRET_KEY || 'default_jwt_secret';
 
 export const adminLogin = (req: Request, res: Response) => {
   const { username, password } = req.body;
