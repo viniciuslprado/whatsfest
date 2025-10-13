@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import { FaHome, FaCog, FaInfoCircle, FaPhone } from 'react-icons/fa';
 import { GiPartyPopper } from 'react-icons/gi';
 
@@ -10,6 +11,14 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Fecha menu ao navegar
+  const handleNavigate = (page: Page) => {
+    onNavigate(page);
+    setMenuOpen(false);
+  };
+
   return (
     <header style={{
       background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',
@@ -17,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
       padding: '16px 0',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
     }}>
-      <div className="container header-container" style={{
+  <div className="container header-container" style={{
         maxWidth: '1200px',
         margin: '0 auto',
         padding: '0 20px',
@@ -44,19 +53,53 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           </h1>
         </div>
 
+        {/* Menu Hamburguer Mobile */}
+        <div className="header-hamburger" style={{ display: 'none', marginLeft: 'auto' }}>
+          <button
+            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            onClick={() => setMenuOpen((v) => !v)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              fontSize: '2rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              marginLeft: '16px',
+              zIndex: 20
+            }}
+          >
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
+
         {/* Navegação central */}
-        <nav className="header-nav">
+        <nav className="header-nav" style={{
+          display: menuOpen ? 'block' : '',
+          position: menuOpen ? 'absolute' : undefined,
+          top: menuOpen ? '64px' : undefined,
+          right: menuOpen ? '16px' : undefined,
+          background: menuOpen ? 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)' : undefined,
+          borderRadius: menuOpen ? '16px' : undefined,
+          boxShadow: menuOpen ? '0 8px 32px rgba(0,0,0,0.15)' : undefined,
+          padding: menuOpen ? '16px 24px' : undefined,
+          zIndex: menuOpen ? 10 : undefined,
+          minWidth: menuOpen ? '180px' : undefined
+        }}>
           <ul style={{
-            display: 'flex',
+            display: menuOpen ? 'flex' : 'flex',
+            flexDirection: menuOpen ? 'column' : 'row',
             flexWrap: 'wrap',
             listStyle: 'none',
-            gap: '32px',
+            gap: menuOpen ? '12px' : '32px',
             margin: 0,
-            padding: 0
+            padding: 0,
+            alignItems: menuOpen ? 'flex-start' : 'center'
           }}>
             <li>
               <button
-                onClick={() => onNavigate('inicio')}
+                onClick={() => handleNavigate('inicio')}
                 style={{
                   background: currentPage === 'inicio' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                   border: 'none',
@@ -88,7 +131,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
 
             <li>
               <button
-                onClick={() => onNavigate('sobre')}
+                onClick={() => handleNavigate('sobre')}
                 style={{
                   background: currentPage === 'sobre' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                   border: 'none',
@@ -119,7 +162,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             </li>
             <li>
               <button
-                onClick={() => onNavigate('contato')}
+                onClick={() => handleNavigate('contato')}
                 style={{
                   background: currentPage === 'contato' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                   border: 'none',
@@ -152,9 +195,9 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         </nav>
 
         {/* Botão Admin */}
-        <div>
+        <div style={{ marginLeft: menuOpen ? 0 : '16px', marginTop: menuOpen ? '8px' : 0 }}>
           <button
-            onClick={() => onNavigate('login')}
+            onClick={() => handleNavigate('login')}
             style={{
               background: 'rgba(255, 255, 255, 0.15)',
               border: '2px solid rgba(255, 255, 255, 0.3)',

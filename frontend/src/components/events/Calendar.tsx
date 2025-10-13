@@ -196,29 +196,28 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
       );
       
       const dayStyle = {
-        padding: '12px',
-        minHeight: '120px',
+        padding: '8px',
+        minHeight: '80px',
         color: '#374151',
         border: '2px solid',
-        borderRadius: '16px',
+        borderRadius: '12px',
         transition: 'all 0.2s ease',
         overflow: 'hidden',
         cursor: festasDoDia.length > 0 ? 'pointer' : 'default',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4px',
         ...(isToday 
           ? {
-              background: 'linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%)',
-              borderColor: '#60a5fa',
-              boxShadow: '0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 0 0 4px rgba(147, 197, 253, 0.3)'
+              // ...existing code...
+              boxShadow: '0 0 0 2px #60a5fa',
             }
           : festasDoDia.length > 0
             ? {
-                background: 'white',
-                borderColor: '#d8b4fe',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                // ...existing code...
               }
             : {
-                background: '#f9fafb',
-                borderColor: '#e5e7eb'
+                // ...existing code...
               }
         )
       };
@@ -231,10 +230,10 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
         >
           {/* Número do Dia */}
           <div style={{
-            fontSize: '16px',
+            fontSize: '13px',
             fontWeight: 'bold',
             textAlign: 'center',
-            marginBottom: '8px',
+            marginBottom: '4px',
             color: isToday 
               ? '#1d4ed8' 
               : festasDoDia.length > 0 
@@ -243,7 +242,9 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '6px'
+            gap: '4px',
+            minHeight: '20px',
+            lineHeight: 1.1
           }}>
             {day}
             {festasDoDia.length > 0 && (
@@ -261,8 +262,8 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
           </div>
           
           {/* Área dos Eventos */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {festasDoDia.slice(0, 2).map(festa => {
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
+            {festasDoDia.map(festa => {
               // Verifica se a festa é na cidade do usuário (para destaque visual)
               const isLocal = cidadeUsuario && festa.cidade.toLowerCase() === cidadeUsuario.toLowerCase();
               const hora = festa.horaInicio || 'Horário não informado';
@@ -272,41 +273,53 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
                   key={festa.id} 
                   onClick={() => handleFestaClick(festa)}
                   style={{
-                    fontSize: '11px',
-                    padding: '6px',
-                    borderRadius: '8px',
+                    fontSize: '10px',
+                    padding: '3px 4px',
+                    borderRadius: '6px',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     background: isLocal 
                       ? 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' 
                       : 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
                     color: isLocal ? 'white' : '#374151',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+                    width: '100%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    marginBottom: '1px',
                   }}
                   title={`${festa.nome} - ${hora}${festa.local ? `\nLocal: ${festa.local}` : ''}\nCidade: ${festa.cidade}`}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.15)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                    e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.08)';
                   }}
                 >
-                  <div style={{
-                    fontWeight: '600',
+                  <span style={{
+                    fontWeight: 600,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    display: 'inline-block',
+                    maxWidth: '90%'
                   }}>
-                    {festa.nome} {isLocal && <FiStar style={{ display: 'inline', marginLeft: '4px', color: '#fbbf24' }} />}
-                  </div>
-                  <div style={{
-                    fontSize: '10px',
-                    marginTop: '2px',
-                    opacity: 0.8,
-                    color: isLocal ? '#d1fae5' : '#6b7280'
+                    {festa.nome} {isLocal && <FiStar style={{ display: 'inline', marginLeft: '2px', color: '#fbbf24' }} />}
+                  </span>
+                  <span style={{
+                    fontSize: '9px',
+                    marginLeft: '4px',
+                    opacity: 0.7,
+                    color: isLocal ? '#d1fae5' : '#6b7280',
+                    display: 'inline-block',
+                    maxWidth: '40%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   }}>
-                    {hora} • {festa.cidade}
-                  </div>
+                    {hora}
+                  </span>
                 </div>
               );
             })}
@@ -541,7 +554,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
         width: '100%',
         maxWidth: '100vw',
         margin: '1rem',
-        background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',
+        background: 'white',
         borderRadius: window.innerWidth < 768 ? '16px' : '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         overflow: 'hidden'
@@ -549,7 +562,7 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
         
         {/* Header principal centralizado */}
         <div style={{
-          background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+          background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',
           color: 'white',
           padding: '2rem'
         }}>
