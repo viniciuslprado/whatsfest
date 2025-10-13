@@ -94,15 +94,15 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
   return (
     <>
   <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden my-8 border border-gray-200">
-  <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white py-3 flex items-center justify-between px-2 sm:px-8">
-          <button onClick={goToPreviousMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-11 h-11 flex items-center justify-center transition-all">
-            &#8592;
-          </button>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-center tracking-tight drop-shadow-lg">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
-          <button onClick={goToNextMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-11 h-11 flex items-center justify-center transition-all">
-            &#8594;
-          </button>
-        </div>
+    <div className="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-600 text-white py-4 flex items-center justify-between px-2 sm:px-8">
+      <button onClick={goToPreviousMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-11 h-11 flex items-center justify-center transition-all">
+        &#8592;
+      </button>
+      <h2 className="text-2xl sm:text-4xl font-extrabold text-center tracking-tight drop-shadow-lg text-white">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
+      <button onClick={goToNextMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-11 h-11 flex items-center justify-center transition-all">
+        &#8594;
+      </button>
+    </div>
         <div className="p-2 sm:p-6">
           <div className="grid grid-cols-7 gap-1 mb-1">
             {daysOfWeek.map((day) => (

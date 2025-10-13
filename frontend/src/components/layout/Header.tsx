@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white shadow-md">
+    <header className="bg-gradient-to-r from-pink-600 via-blue-600 to-blue-800 text-white shadow-lg">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => onNavigate('inicio')}>
