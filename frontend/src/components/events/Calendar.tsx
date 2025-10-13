@@ -1,140 +1,40 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import './CalendarMobile.css';
-import { buscarFestas } from '../../lib/api'; 
-import type { Festa } from '../../lib/api'
-import FestaDetailsModal from '../modals/FestaDetailsModal'; // Importa o Modal de Detalhes
-import DayEventsModal from '../modals/DayEventsModal'; // Importa o Modal de Eventos do Dia
-import { FiSearch, FiCalendar, FiClock, FiMapPin, FiHome, FiFrown, FiStar } from 'react-icons/fi';
-
-// Endereço de uma API gratuita de geolocalização (IP para Cidade)
-const GEO_API_URL = 'https://ipapi.co/json/';
-
-interface FilterState {
-  nomeEvento: string;
-  cidade: string;
-  data: string;
-  userLatitude?: number;
-  userLongitude?: number;
-  maxDistance?: number; // km
-}
+import { useState, useMemo } from 'react';
+import DayEventsModal from '../modals/DayEventsModal';
+import type { Festa } from '../../lib/api';
 
 interface CalendarProps {
-  filters?: FilterState;
+  festas?: Festa[];
 }
 
-const Calendar: React.FC<CalendarProps> = ({ filters }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [festas, setFestas] = useState<Festa[]>([]);
-  const [cidadeUsuario, setCidadeUsuario] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  
-  // Estado para controlar a exibição do Modal de Detalhes
-  const [selectedFesta, setSelectedFesta] = useState<Festa | null>(null);
-  
-  // Estado para controlar o Modal de Eventos do Dia
+const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const monthNames = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+];
+
+
+const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedDayEvents, setSelectedDayEvents] = useState<Festa[]>([]);
-  const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-  const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-  
-  // --- 1. Lógica de Geolocalização ---
 
-  useEffect(() => {
-    // Tenta obter a cidade do usuário baseado no IP
-    const getGeolocation = async () => {
-      try {
-        const response = await fetch(GEO_API_URL);
-        const data = await response.json();
-        setCidadeUsuario(data.city); 
-      } catch (error) {
-        console.error('Erro ao obter geolocalização:', error);
-        setCidadeUsuario(null);
-      }
-    };
-    getGeolocation();
-  }, []); 
-
-  // --- 2. Busca de Dados e Rebusca ao Mudar de Mês/Cidade ---
-  
-  useEffect(() => {
-    const loadFestas = async () => {
-      setLoading(true);
-      // Busca TODAS as festas sem filtro de cidade (cidade serve apenas como filtro no frontend)
-      const data = await buscarFestas();
-      setFestas(data);
-      setLoading(false);
-    };
-    
-    loadFestas();
-  }, []); // Remove dependência de cidadeUsuario 
-
-
-  // Filtra as festas para a lista de resultados (acima do calendário)
-  const festasFiltradas = useMemo(() => {
-    return festas.filter(festa => {
-      const dataFesta = festa.data ? new Date(festa.data) : null;
-      if (filters) {
-        if (filters.nomeEvento && !festa.nome.toLowerCase().includes(filters.nomeEvento.toLowerCase())) {
-          return false;
-        }
-        if (filters.cidade && !festa.cidade.toLowerCase().includes(filters.cidade.toLowerCase())) {
-          return false;
-        }
-        if (filters.data && dataFesta) {
-          const dataFiltro = new Date(filters.data + 'T00:00:00');
-          const festaAno = dataFesta.getFullYear();
-          const festaMes = dataFesta.getMonth();
-          const festaDia = dataFesta.getDate();
-          const filtroAno = dataFiltro.getFullYear();
-          const filtroMes = dataFiltro.getMonth();
-          const filtroDia = dataFiltro.getDate();
-          if (festaAno !== filtroAno || festaMes !== filtroMes || festaDia !== filtroDia) {
-            return false;
-          }
-        }
-      }
-      return true;
-    });
-  }, [festas, filters]);
-
-  // Para o calendário: mostrar todos os eventos do mês, sem filtro
+  // Filtra eventos do mês atual
   const festasDoMes = useMemo(() => {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
-    return festas.filter(festa => {
+    return festas.filter((festa) => {
       if (!festa.data) return false;
       const dataFesta = new Date(festa.data);
       return dataFesta.getMonth() === currentMonth && dataFesta.getFullYear() === currentYear;
     });
   }, [festas, currentDate]);
-  
-  // --- 3. Lógica e Funções de Navegação e Modal ---
 
-  const getDaysInMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  };
-  
-  const getFirstDayOfMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-  };
-  
-  const goToPreviousMonth = () => {
-    setCurrentDate(prevDate => new Date(prevDate.getFullYear(), prevDate.getMonth() - 1));
-  };
-  
-  const goToNextMonth = () => {
-    setCurrentDate(prevDate => new Date(prevDate.getFullYear(), prevDate.getMonth() + 1));
-  };
-  
-  const handleFestaClick = (festa: Festa) => {
-    setSelectedFesta(festa);
-  };
-  
-  const handleCloseModal = () => {
-    setSelectedFesta(null);
-  };
+  const getDaysInMonth = (date: Date): number => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  const getFirstDayOfMonth = (date: Date): number => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
 
-  // Função para lidar com click no dia (abre modal com lista de eventos)
+  const goToPreviousMonth = () => setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1));
+  const goToNextMonth = () => setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1));
+
   const handleDayClick = (day: number, eventos: Festa[]) => {
     if (eventos.length > 0) {
       const clickedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
@@ -142,573 +42,83 @@ const Calendar: React.FC<CalendarProps> = ({ filters }) => {
       setSelectedDayEvents(eventos);
     }
   };
-
-  // Função para fechar o modal de eventos do dia
   const handleCloseDayModal = () => {
     setSelectedDate(null);
     setSelectedDayEvents([]);
   };
 
-  // --- 4. Renderização Avançada dos Dias ---
-
   const renderCalendarDays = () => {
     const daysInMonth = getDaysInMonth(currentDate);
     const firstDay = getFirstDayOfMonth(currentDate);
     const days = [];
-    
-    // Dias em branco
     for (let i = 0; i < firstDay; i++) {
       days.push(
-        <div key={`empty-${i}`} style={{
-          padding: '8px',
-          minHeight: '120px',
-          background: '#f9fafb',
-          borderRadius: '12px',
-          border: '1px solid #f3f4f6'
-        }}>
-        </div>
+        <div key={`empty-${i}`} className="border border-gray-100 bg-gray-50 rounded-xl min-h-[48px]" />
       );
     }
-    
-    // Dias do mês atual
     for (let day = 1; day <= daysInMonth; day++) {
       const today = new Date();
-      const isToday = 
+      const isToday =
         day === today.getDate() &&
         currentDate.getMonth() === today.getMonth() &&
         currentDate.getFullYear() === today.getFullYear();
-        
-      // Filtra as festas que acontecem NESTE dia
-      const festasDoDia = festasDoMes.filter(festa => 
-        festa.data && new Date(festa.data).getDate() === day
-      );
-      
-      const dayStyle: React.CSSProperties = {
-        padding: '8px',
-        minHeight: '80px',
-        color: '#374151',
-        border: '2px solid',
-        borderRadius: '12px',
-        transition: 'all 0.2s ease',
-        overflow: 'hidden',
-        cursor: festasDoDia.length > 0 ? 'pointer' : 'default',
-        display: 'flex',
-        flexDirection: 'column' as React.CSSProperties['flexDirection'],
-        gap: '4px',
-        ...(isToday 
-          ? {
-              // ...existing code...
-              boxShadow: '0 0 0 2px #60a5fa',
-            }
-          : festasDoDia.length > 0
-            ? {
-                // ...existing code...
-              }
-            : {
-                // ...existing code...
-              }
-        )
-      };
-
+      const festasDoDia = festasDoMes.filter((festa) => {
+        if (!festa.data) return false;
+        const dataFesta = new Date(festa.data);
+        return dataFesta.getDate() === day;
+      });
+      const hasEvent = festasDoDia.length > 0;
       days.push(
-        <div 
-          key={day} 
-          style={dayStyle}
+        <button
+          key={day}
+          type="button"
+          className={`flex flex-col items-center justify-center rounded-lg min-h-[44px] aspect-square select-none transition cursor-pointer border
+            ${isToday ? 'border-blue-500 bg-blue-50 shadow-md ring-2 ring-blue-300' : hasEvent ? 'border-pink-400 bg-pink-50 shadow-sm' : 'border-gray-200 bg-white'}
+            hover:scale-105 hover:z-10 focus:outline-none focus:ring-2 focus:ring-pink-400`}
           onClick={() => handleDayClick(day, festasDoDia)}
         >
-          {/* Número do Dia */}
-          <div style={{
-            fontSize: '13px',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            marginBottom: '4px',
-            color: isToday 
-              ? '#1d4ed8' 
-              : festasDoDia.length > 0 
-                ? '#7c3aed' 
-                : '#6b7280',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '4px',
-            minHeight: '20px',
-            lineHeight: 1.1
-          }}>
-            {day}
-            {festasDoDia.length > 0 && (
-              <span style={{
-                fontSize: '10px',
-                background: '#f3e8ff',
-                color: '#7c3aed',
-                padding: '2px 6px',
-                borderRadius: '12px',
-                fontWeight: '500'
-              }}>
-                {festasDoDia.length}
-              </span>
-            )}
-          </div>
-          
-          {/* Área dos Eventos */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '100%' }}>
-            {festasDoDia.map(festa => {
-              // Verifica se a festa é na cidade do usuário (para destaque visual)
-              const isLocal = cidadeUsuario && festa.cidade.toLowerCase() === cidadeUsuario.toLowerCase();
-              const hora = festa.horaInicio || 'Horário não informado';
-
-              return (
-                <div 
-                  key={festa.id} 
-                  onClick={() => handleFestaClick(festa)}
-                  style={{
-                    fontSize: '10px',
-                    padding: '3px 4px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    background: isLocal 
-                      ? 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' 
-                      : 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
-                    color: isLocal ? 'white' : '#374151',
-                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
-                    width: '100%',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    marginBottom: '1px',
-                  }}
-                  title={`${festa.nome} - ${hora}${festa.local ? `\nLocal: ${festa.local}` : ''}\nCidade: ${festa.cidade}`}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.08)';
-                  }}
-                >
-                  <span style={{
-                    fontWeight: 600,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    display: 'inline-block',
-                    maxWidth: '90%'
-                  }}>
-                    {festa.nome} {isLocal && <FiStar style={{ display: 'inline', marginLeft: '2px', color: '#fbbf24' }} />}
-                  </span>
-                  <span style={{
-                    fontSize: '9px',
-                    marginLeft: '4px',
-                    opacity: 0.7,
-                    color: isLocal ? '#d1fae5' : '#6b7280',
-                    display: 'inline-block',
-                    maxWidth: '40%',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {hora}
-                  </span>
-                </div>
-              );
-            })}
-            
-            {festasDoDia.length > 2 && (
-              <div style={{
-                fontSize: '10px',
-                color: '#7c3aed',
-                fontWeight: '500',
-                textAlign: 'center',
-                padding: '4px',
-                background: '#f3e8ff',
-                borderRadius: '6px'
-              }}>
-                +{festasDoDia.length - 2} eventos
-              </div>
-            )}
-          </div>
-        </div>
+          <span className={`font-semibold text-base leading-none ${isToday ? 'text-blue-700' : hasEvent ? 'text-pink-700' : 'text-gray-500'}`}>{day}</span>
+          {hasEvent && (
+            <span className="mt-1 text-[11px] font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full px-2 py-0.5 shadow">
+              {festasDoDia.length} evento{festasDoDia.length > 1 ? 's' : ''}
+            </span>
+          )}
+        </button>
       );
     }
-    
     return days;
   };
 
   return (
     <>
-      {/* Seção de Resultados dos Filtros - ACIMA do calendário */}
-      {(filters?.nomeEvento || filters?.cidade || filters?.data) && (
-        <div style={{
-          width: '100%',
-          maxWidth: '100vw',
-          margin: '1rem 1rem 0.5rem 1rem',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-          borderRadius: window.innerWidth < 768 ? '16px' : '24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',
-            color: 'white',
-            padding: '1.5rem'
-          }}>
-            <h3 style={{
-              fontSize: '1.5rem',
-              fontWeight: '700',
-              margin: 0,
-              textAlign: 'center'
-            }}>
-              <FiSearch style={{ display: 'inline', marginRight: '8px' }} />
-              Resultados da Pesquisa ({festasFiltradas.length} encontrados)
-            </h3>
-            {(filters?.nomeEvento || filters?.cidade || filters?.data) && (
-              <div style={{
-                textAlign: 'center',
-                marginTop: '0.5rem',
-                fontSize: '0.9rem',
-                opacity: 0.9
-              }}>
-                {filters.nomeEvento && `"${filters.nomeEvento}"`}
-                {filters.cidade && ` em ${filters.cidade}`}
-                {filters.data && ` no dia ${new Date(filters.data + 'T00:00:00').toLocaleDateString('pt-BR')}`}
-              </div>
-            )}
-          </div>
-
-          <div style={{ padding: '1.5rem' }}>
-            {festasFiltradas.length === 0 ? (
-              <div style={{
-                textAlign: 'center',
-                padding: '3rem 1rem',
-                color: '#9ca3af'
-              }}>
-                <div style={{ fontSize: '4rem', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
-                  <FiFrown size={64} color="#9ca3af" />
-                </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '600', margin: '0 0 0.5rem 0' }}>
-                  Nenhum evento encontrado
-                </h3>
-                <p style={{ margin: 0 }}>
-                  Tente ajustar os filtros para encontrar mais eventos
-                </p>
-              </div>
-            ) : (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                gap: '1rem'
-              }}>
-                {festasFiltradas.map((evento) => {
-                  const dataFormatada = evento.data ? new Date(evento.data).toLocaleDateString('pt-BR', {
-                    weekday: 'long',
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric'
-                  }) : 'Data não informada';
-                  
-                  const horaFormatada = evento.horaInicio ? 
-                    `${evento.horaInicio}${evento.horaFim ? ` - ${evento.horaFim}` : ''}` : 
-                    'Horário não informado';
-                  const isLocal = cidadeUsuario && evento.cidade.toLowerCase() === cidadeUsuario.toLowerCase();
-
-                  return (
-                    <div
-                      key={evento.id}
-                      onClick={() => handleFestaClick(evento)}
-                      style={{
-                        background: isLocal 
-                          ? 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)' 
-                          : 'white',
-                        border: `2px solid ${isLocal ? '#10b981' : '#e5e7eb'}`,
-                        borderRadius: '16px',
-                        padding: '1.5rem',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        position: 'relative'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.boxShadow = '0 20px 25px rgba(0, 0, 0, 0.15)';
-                        e.currentTarget.style.borderColor = '#8b5cf6';
-                        e.currentTarget.style.background = '#fefbff';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.boxShadow = 'none';
-                        e.currentTarget.style.borderColor = isLocal ? '#10b981' : '#e5e7eb';
-                        e.currentTarget.style.background = 'white';
-                      }}
-                    >
-                      {/* Badge de destaque */}
-                      {evento.destaque && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '1rem',
-                          right: '1rem',
-                          background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-                          color: 'white',
-                          padding: '4px 8px',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                          fontWeight: '600'
-                        }}>
-                          <FiStar style={{ display: 'inline', marginRight: '4px' }} />
-                          Destaque
-                        </div>
-                      )}
-
-                      {/* Badge de evento local */}
-                      {isLocal && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '1rem',
-                          left: '1rem',
-                          background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
-                          color: 'white',
-                          padding: '4px 8px',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                          fontWeight: '600'
-                        }}>
-                          <FiMapPin style={{ display: 'inline', marginRight: '4px' }} />
-                          Sua cidade
-                        </div>
-                      )}
-
-                      <div>
-                        {/* Informações do evento */}
-                        <div>
-                          <h4 style={{
-                            fontSize: '1.2rem',
-                            fontWeight: '700',
-                            color: '#1f2937',
-                            margin: '0 0 0.5rem 0'
-                          }}>
-                            {evento.nome}
-                          </h4>
-
-                          <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '0.25rem',
-                            fontSize: '0.9rem',
-                            color: '#6b7280',
-                            marginBottom: '0.75rem'
-                          }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <FiCalendar size={16} />
-                              <span style={{ textTransform: 'capitalize' }}>{dataFormatada}</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <FiClock size={16} />
-                              <span>{horaFormatada}</span>
-                            </div>
-                            {evento.local && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <FiMapPin size={16} />
-                                <span>{evento.local}</span>
-                              </div>
-                            )}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <FiHome size={16} />
-                              <span>{evento.cidade}</span>
-                            </div>
-                          </div>
-
-                          {evento.descricaoCurta && (
-                            <p style={{
-                              margin: 0,
-                              color: '#374151',
-                              fontSize: '0.85rem',
-                              lineHeight: '1.4',
-                              overflow: 'hidden',
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical'
-                            }}>
-                              {evento.descricaoCurta}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+      <div className="w-full max-w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden my-4 border border-gray-100">
+        <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white py-3 flex items-center justify-between px-2 sm:px-8">
+          <button onClick={goToPreviousMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-9 h-9 flex items-center justify-center transition">
+            &#8592;
+          </button>
+          <h2 className="text-lg sm:text-2xl font-bold text-center tracking-tight drop-shadow">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
+          <button onClick={goToNextMonth} className="rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-2xl w-9 h-9 flex items-center justify-center transition">
+            &#8594;
+          </button>
         </div>
-      )}
-
-      {/* Calendário Principal */}
-      <div className="calendar-responsive" style={{
-        width: '100%',
-        maxWidth: '100vw',
-        margin: '1rem',
-        background: 'white',
-        borderRadius: window.innerWidth < 768 ? '16px' : '24px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-        overflow: 'hidden'
-      }}>
-        
-        {/* Header principal centralizado */}
-        <div style={{
-          background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%)',
-          color: 'white',
-          padding: '2rem'
-        }}>
-          {/* Navegação do mês centralizada */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '2rem',
-            marginBottom: '1rem'
-          }}>
-            <button
-              onClick={goToPreviousMonth}
-              style={{
-                padding: '15px',
-                borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.2)',
-                border: 'none',
-                color: 'white',
-                fontSize: '24px',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                fontWeight: 'bold'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-              aria-label="Mês anterior"
-            >
-              ←
-            </button>
-            
-            <h2 style={{
-              fontSize: '2.5rem',
-              fontWeight: '700',
-              margin: 0,
-              textAlign: 'center',
-              letterSpacing: '-0.02em'
-            }}>
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-            </h2>
-            
-            <button
-              onClick={goToNextMonth}
-              style={{
-                padding: '15px',
-                borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.2)',
-                border: 'none',
-                color: 'white',
-                fontSize: '24px',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                fontWeight: 'bold'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-              aria-label="Próximo mês"
-            >
-              →
-            </button>
-          </div>
-        </div>
-
-        <div style={{ padding: '2rem' }}>
-          {/* Dias da semana */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '8px',
-            marginBottom: '1rem'
-          }}>
+        <div className="p-2 sm:p-4">
+          <div className="grid grid-cols-7 gap-1 mb-1">
             {daysOfWeek.map((day) => (
-              <div key={day} style={{
-                padding: '12px',
-                textAlign: 'center',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#4b5563',
-                background: '#f3f4f6',
-                borderRadius: '12px'
-              }}>
+              <div key={day} className="py-1 text-center text-xs font-semibold text-gray-600 bg-gray-50 rounded-lg tracking-tight">
                 {day}
               </div>
             ))}
           </div>
-          
-          {/* Dias do calendário */}
-          {/* Dias do calendário - responsivo para mobile */}
-          <div className="calendar-mobile-scroll">
-            <div className="calendar-days-grid">
-              {loading ? (
-                <div style={{
-                  gridColumn: 'span 7',
-                  textAlign: 'center',
-                  padding: '3rem 0'
-                }}>
-                  <div style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '1rem 2rem',
-                    background: '#eff6ff',
-                    borderRadius: '50px'
-                  }}>
-                    <div style={{
-                      width: '20px',
-                      height: '20px',
-                      border: '2px solid #3b82f6',
-                      borderTop: '2px solid transparent',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite'
-                    }}></div>
-                    <span style={{ color: '#2563eb', fontWeight: '500' }}>
-                      Carregando eventos...
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                renderCalendarDays()
-              )}
-            </div>
+          <div className="grid grid-cols-7 gap-1">
+            {renderCalendarDays()}
           </div>
         </div>
       </div>
-        className="calendar-day-cell"
-      <style>
-        {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
-
-      {/* O Modal de Detalhes da Festa (Renderizado fora do calendário, mas na mesma página) */}
-      <FestaDetailsModal 
-        festa={selectedFesta} 
-        onClose={handleCloseModal} 
-      />
-
-      {/* Modal de Eventos do Dia */}
       <DayEventsModal
         selectedDate={selectedDate}
         eventos={selectedDayEvents}
         onClose={handleCloseDayModal}
-        onEventClick={handleFestaClick}
+        onEventClick={() => {}}
       />
     </>
   );
