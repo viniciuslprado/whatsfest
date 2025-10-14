@@ -30,15 +30,15 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1000] p-4"
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1000] p-1 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl p-8 max-w-xl w-full max-h-[80vh] overflow-y-auto shadow-2xl relative"
+        className="bg-white rounded-2xl p-2 sm:p-6 md:p-8 max-w-md sm:max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-start mb-8 pb-4 border-b-2 border-gray-100">
+  <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mb-6 sm:mb-8 pb-3 sm:pb-4 border-b-2 border-gray-100">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Eventos do Dia</h2>
             <p className="text-gray-500 text-base font-medium capitalize m-0">{formatDate(selectedDate)}</p>
@@ -74,61 +74,61 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
               return (
                 <div
                   key={evento.id}
-                  className="relative bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-gray-200 rounded-2xl p-0 overflow-hidden shadow-xl"
+                  className="relative bg-gradient-to-br from-slate-50 to-slate-100 border border-gray-200 rounded-2xl p-0 overflow-hidden shadow-xl flex flex-col sm:flex-row gap-0 sm:gap-4"
                 >
                   {/* Imagem/Flyer do Evento */}
-                  <div className="relative">
+                  <div className="relative w-full sm:w-40 flex-shrink-0">
                     <img 
                       src={evento.urlImagemFlyer || 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'} 
                       alt={`Flyer da ${evento.nome}`} 
-                      className="w-full h-48 object-cover rounded-t-2xl"
+                      className="w-full h-40 sm:h-48 object-cover rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none"
                       onError={e => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'; }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-2xl"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none"></div>
                     {evento.destaque && (
-                      <div className="absolute top-4 right-4 bg-gradient-to-br from-amber-300 to-orange-400 text-white px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow">
+                      <div className="absolute top-2 right-2 bg-gradient-to-br from-amber-300 to-orange-400 text-white px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow">
                         <FiStar className="inline mr-1" /> Destaque
                       </div>
                     )}
                   </div>
                   {/* Conteúdo do Evento */}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">{evento.nome}</h3>
+                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-center">
+                    <h3 className="text-lg sm:text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-1 sm:mb-2">{evento.nome}</h3>
                     {evento.descricaoCurta && (
-                      <p className="text-sm font-medium text-purple-600 mb-4 px-3 py-1 bg-purple-100 rounded-full inline-block">{evento.descricaoCurta}</p>
+                      <p className="text-xs sm:text-sm font-medium text-purple-600 mb-2 sm:mb-4 px-2 py-1 bg-purple-100 rounded-full inline-block">{evento.descricaoCurta}</p>
                     )}
-                    <div className="space-y-4 border-t border-gray-200 pt-6">
-                      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-xl">
-                        <div className="flex items-center text-gray-800 mb-2">
-                          <FiCalendar className="text-2xl mr-3" />
+                    <div className="space-y-2 sm:space-y-4 border-t border-gray-200 pt-3 sm:pt-6">
+                      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-2 sm:p-4 rounded-xl">
+                        <div className="flex items-center text-gray-800 mb-1 sm:mb-2">
+                          <FiCalendar className="text-xl sm:text-2xl mr-2 sm:mr-3" />
                           <div>
                             <span className="font-semibold text-purple-700">Data:</span> 
-                            <span className="ml-2">{dataFormatada}</span>
+                            <span className="ml-1 sm:ml-2">{dataFormatada}</span>
                           </div>
                         </div>
-                        <div className="flex items-center text-gray-800 mb-2">
-                          <span className="text-2xl mr-3">⏰</span>
+                        <div className="flex items-center text-gray-800 mb-1 sm:mb-2">
+                          <span className="text-xl sm:text-2xl mr-2 sm:mr-3">⏰</span>
                           <div>
                             <span className="font-semibold text-purple-700">Hora:</span> 
-                            <span className="ml-2">{hora}</span>
+                            <span className="ml-1 sm:ml-2">{hora}</span>
                           </div>
                         </div>
-                        <div className="flex items-center text-gray-800 mb-2">
-                          <FiMapPin className="text-2xl mr-3" />
+                        <div className="flex items-center text-gray-800 mb-1 sm:mb-2">
+                          <FiMapPin className="text-xl sm:text-2xl mr-2 sm:mr-3" />
                           <div>
                             <span className="font-semibold text-purple-700">Local:</span> 
-                            <span className="ml-2">{evento.local || '-'}</span>
+                            <span className="ml-1 sm:ml-2">{evento.local || '-'}</span>
                           </div>
                         </div>
                         <div className="flex items-center text-gray-800">
-                          <span className="text-2xl mr-3">🏙️</span>
+                          <span className="text-xl sm:text-2xl mr-2 sm:mr-3">🏙️</span>
                           <div>
                             <span className="font-semibold text-purple-700">Cidade:</span> 
-                            <span className="ml-2">{evento.cidade}</span>
+                            <span className="ml-1 sm:ml-2">{evento.cidade}</span>
                           </div>
                         </div>
                         {evento.linkVendas && (
-                          <div className="flex items-center text-gray-800 mt-2">
+                          <div className="flex items-center text-gray-800 mt-1 sm:mt-2">
                             <a href={evento.linkVendas} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline font-semibold">Comprar Ingressos</a>
                           </div>
                         )}

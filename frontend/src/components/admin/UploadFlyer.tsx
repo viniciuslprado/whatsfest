@@ -13,6 +13,7 @@ const UploadFlyer: React.FC = () => {
   const [selected, setSelected] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchFlyers = async () => {
@@ -93,48 +94,82 @@ const UploadFlyer: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white/90 rounded-2xl shadow-lg p-8 mt-8 flex flex-col items-center">
-      <h2 className="text-2xl font-bold mb-6 text-center text-pink-600 flex items-center gap-2">
-        <FiUploadCloud className="text-3xl" /> Upload de Flyer
-      </h2>
-      <div
-        className="w-full flex flex-col items-center justify-center border-2 border-dashed border-pink-400 rounded-xl p-8 bg-pink-50 hover:bg-pink-100 transition cursor-pointer mb-6"
-        onClick={() => fileInputRef.current?.click()}
-        style={{ minHeight: 180 }}
-      >
-        {preview ? (
-          <img src={preview} alt="Preview flyer" className="max-h-40 rounded-lg shadow mb-2" />
-        ) : (
-          <>
-            <FiImage className="text-5xl text-pink-300 mb-2" />
-            <span className="text-pink-500 font-semibold">Clique para selecionar uma imagem</span>
-          </>
-        )}
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-        />
+    <div className="bg-white/90 rounded-2xl shadow-lg p-1 sm:p-3 md:p-6 w-full max-w-full relative flex flex-col min-h-[500px]" style={{height: 'calc(80vh)', maxHeight: '800px'}}>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-pink-700 flex items-center gap-2"><FiUploadCloud /> Gerenciar Flyers</h2>
+        <div className="flex gap-2">
+          <button
+            className="px-4 py-2 rounded-lg text-xs font-bold bg-green-600 text-white hover:bg-green-700 transition"
+            onClick={() => setShowUpload(true)}
+          >Adicionar Flyer</button>
+          <button
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition ${selected ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+            disabled={!selected || deleting}
+            onClick={handleDelete}
+          >Excluir</button>
+        </div>
       </div>
-      {fileName && (
-        <div className="mb-4 text-sm text-gray-700">Arquivo selecionado: <span className="font-bold">{fileName}</span></div>
-      )}
-      <button
-        type="button"
-        className="w-full py-3 px-6 rounded-lg bg-gradient-to-br from-pink-500 to-fuchsia-500 text-white font-bold text-lg shadow-md hover:from-pink-600 hover:to-fuchsia-600 transition disabled:opacity-60 disabled:cursor-not-allowed mb-8"
-        disabled={!preview || uploading}
-        onClick={handleUpload}
-      >
-        {uploading ? 'Enviando...' : 'Enviar Flyer'}
-        {success && <FiCheckCircle className="inline ml-2 text-green-500" />}
-      </button>
 
-      <div className="w-full mt-8 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-pink-200 scrollbar-track-pink-50">
-        <h3 className="text-lg font-bold mb-4 text-pink-700">Flyers já enviados</h3>
+      {/* Modal de Upload */}
+      {showUpload && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-white rounded-2xl shadow-2xl p-0 max-w-md w-full relative animate-fade-in">
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold z-10"
+              onClick={() => {
+                setShowUpload(false);
+                setPreview(null);
+                setFileName('');
+                setFile(null);
+              }}
+            >✕</button>
+            <div className="p-8 flex flex-col items-center">
+              <h3 className="text-xl font-bold mb-4 text-pink-600 flex items-center gap-2"><FiUploadCloud /> Upload de Flyer</h3>
+              <div
+                className="w-full flex flex-col items-center justify-center border-2 border-dashed border-pink-400 rounded-xl p-8 bg-pink-50 hover:bg-pink-100 transition cursor-pointer mb-6"
+                onClick={() => fileInputRef.current?.click()}
+                style={{ minHeight: 180 }}
+              >
+                {preview ? (
+                  <img src={preview} alt="Preview flyer" className="max-h-40 rounded-lg shadow mb-2" />
+                ) : (
+                  <>
+                    <FiImage className="text-5xl text-pink-300 mb-2" />
+                    <span className="text-pink-500 font-semibold">Clique para selecionar uma imagem</span>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                />
+              </div>
+              {fileName && (
+                <div className="mb-4 text-sm text-gray-700">Arquivo selecionado: <span className="font-bold">{fileName}</span></div>
+              )}
+              <button
+                type="button"
+                className="w-full py-3 px-6 rounded-lg bg-gradient-to-br from-pink-500 to-fuchsia-500 text-white font-bold text-lg shadow-md hover:from-pink-600 hover:to-fuchsia-600 transition disabled:opacity-60 disabled:cursor-not-allowed mb-2"
+                disabled={!preview || uploading}
+                onClick={async () => {
+                  await handleUpload();
+                  setShowUpload(false);
+                }}
+              >
+                {uploading ? 'Enviando...' : 'Enviar Flyer'}
+                {success && <FiCheckCircle className="inline ml-2 text-green-500" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lista de Flyers */}
+      <div className="w-full flex-1 overflow-y-auto max-h-full scrollbar-thin scrollbar-thumb-pink-200 scrollbar-track-pink-50 pb-4">
         {flyers.length === 0 ? (
-          <div className="text-gray-400 text-center">Nenhum flyer enviado ainda.</div>
+          <div className="text-gray-400 text-center mt-12">Nenhum flyer enviado ainda.</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {flyers.map(flyer => (

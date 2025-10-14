@@ -13,9 +13,8 @@ import './App.css';
 
 type Page = 'inicio' | 'admin' | 'login' | 'sobre';
 
+
 function App() {
-
-
   const [currentPage, setCurrentPage] = useState<Page>('inicio');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
@@ -26,10 +25,28 @@ function App() {
     userLongitude: undefined,
     maxDistance: undefined
   });
-  const [festas, setFestas] = useState<Festa[]>([]);
+  const [allFestas, setAllFestas] = useState<Festa[]>([]); // todas as festas
+  const [festas, setFestas] = useState<Festa[]>([]); // festas filtradas
+
+  // Carrega todas as festas ao iniciar
   useEffect(() => {
-    buscarFestas().then(setFestas);
+    buscarFestas().then(setAllFestas);
   }, []);
+
+  // Filtra festas sempre que os filtros mudam
+  useEffect(() => {
+    let filtradas = allFestas;
+    if (filters.nomeEvento) {
+      filtradas = filtradas.filter(f => f.nome.toLowerCase().includes(filters.nomeEvento.toLowerCase()));
+    }
+    if (filters.cidade) {
+      filtradas = filtradas.filter(f => f.cidade.toLowerCase().includes(filters.cidade.toLowerCase()));
+    }
+    if (filters.data) {
+      filtradas = filtradas.filter(f => f.data && f.data.startsWith(filters.data));
+    }
+    setFestas(filtradas);
+  }, [filters, allFestas]);
 
   const handleLogin = async (username: string, password: string): Promise<boolean> => {
     try {
@@ -79,6 +96,7 @@ function App() {
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
+
 
   // Página de Login
   if (currentPage === 'login') {
