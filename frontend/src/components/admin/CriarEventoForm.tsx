@@ -118,7 +118,10 @@ const CriarEventoForm: React.FC<CriarEventoFormProps> = ({ onCreated, initialDat
   };
 
   return (
-  <form onSubmit={handleSubmit} className="max-w-lg sm:max-w-2xl w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-2 sm:p-4 md:p-8 mt-4 sm:mt-8 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 text-xs sm:text-sm">
+  <form
+    onSubmit={handleSubmit}
+    className={`w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-2 sm:p-4 ${isEdit ? 'max-w-xs sm:max-w-md md:p-4' : 'max-w-lg sm:max-w-2xl md:p-8'} mt-4 sm:mt-8 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 text-xs sm:text-sm`}
+  >
       <h2 className="text-2xl font-bold mb-6 text-center text-purple-700">Criar Novo Evento</h2>
 
       {/* Nome do Evento */}

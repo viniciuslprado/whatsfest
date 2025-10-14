@@ -17,14 +17,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
   // removido selectedFesta
   if (!selectedDate) return null;
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+
 
 
   return (
@@ -36,12 +29,8 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
         className="bg-white rounded-2xl p-1 sm:p-3 md:p-4 max-w-md sm:max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-  <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mb-6 sm:mb-8 pb-3 sm:pb-4 border-b-2 border-gray-100">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Eventos do Dia</h2>
-            <p className="text-gray-500 text-base font-medium capitalize m-0">{formatDate(selectedDate)}</p>
-          </div>
+        {/* Botão de fechar no topo direito */}
+        <div className="flex justify-end mb-2">
           <button
             onClick={onClose}
             className="bg-gray-100 hover:bg-gray-200 border-none rounded-full w-10 h-10 flex items-center justify-center text-xl text-gray-500 transition-all duration-200"
@@ -148,7 +137,6 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
           </div>
         )}
       </div>
-  {/* Modal de detalhes do evento removido, pois detalhes agora aparecem direto nos cards */}
     </div>
   );
 };
