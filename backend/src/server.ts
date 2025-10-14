@@ -82,7 +82,8 @@ app.post("/api/v1/festas", authAdmin, async (req, res) => {
     let dataProcessada = null;
     if (data) {
       const [year, month, day] = data.split("-").map(Number);
-      dataProcessada = new Date(year, month - 1, day);
+      // Garante que a data salva é sempre o dia correto, independente do fuso do servidor
+      dataProcessada = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)); // meio-dia UTC
     }
     const festa = await prisma.festa.create({
       data: {
@@ -110,7 +111,7 @@ app.put("/api/v1/festas/:id", authAdmin, async (req, res) => {
     let dataProcessada = null;
     if (data) {
       const [year, month, day] = data.split("-").map(Number);
-      dataProcessada = new Date(year, month - 1, day);
+      dataProcessada = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)); // meio-dia UTC
     }
     // Padroniza cidade para 'Nome (UF)'
     const cidadeFormatada = cidade.replace(/\s*-\s*/g, ' ').replace(/\s*\(([^)]+)\)$/, '').trim();
