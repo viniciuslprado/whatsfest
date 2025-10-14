@@ -5,10 +5,10 @@ import dotenv from "dotenv";
 import authAdmin from './middlewares/authAdmin';
 import { adminLogin } from './controllers/adminController';
 import cidadesData from './data/cidadesBrasil.js';
+import flyerRoutes from './flyerRoutes';
+import path from 'path';
 
 dotenv.config();
-
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,16 +17,23 @@ const prisma = new PrismaClient();
 app.use(express.json());
 app.use(cors());
 
+// Servir arquivos estáticos dos flyers
+app.use('/uploads/flyers', express.static(path.join(__dirname, '../../uploads/flyers')));
+
+// Rotas de flyer (upload, listar, excluir)
+
+app.use(flyerRoutes);
+
 // Rota para autocomplete de cidades
 app.get('/api/v1/geolocation/cities', (req, res) => {
   const search = (req.query.search || '').toString().toLowerCase();
   if (!search || search.length < 2) return res.json([]);
-  const cidadesEstaticas: Array<{ nome: string, estado: string }> = cidadesData.cidadesEstaticas;
+  const cidadesEstaticas = cidadesData.cidadesEstaticas;
   const results = cidadesEstaticas
-    .filter((c) =>
+    .filter((c: { nome: string, estado: string }) =>
       `${c.nome} (${c.estado})`.toLowerCase().includes(search)
     )
-    .map((c) => `${c.nome} (${c.estado})`)
+    .map((c: { nome: string, estado: string }) => `${c.nome} (${c.estado})`)
     .slice(0, 10); // Limita a 10 sugestões
   res.json(results);
 });

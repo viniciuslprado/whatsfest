@@ -11,7 +11,7 @@ const GerenciarEventos: React.FC = () => {
   const [editId, setEditId] = useState<number | null>(null);
   const [editData, setEditData] = useState<Partial<Festa>>({});
   const [saving, setSaving] = useState(false);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
 
   const fetchEventos = async () => {
@@ -25,7 +25,7 @@ const GerenciarEventos: React.FC = () => {
       if (!response.ok) throw new Error('Erro ao buscar eventos');
       const data = await response.json();
       setEventos(data);
-    } catch (err) {
+    } catch {
       setError('Erro ao buscar eventos');
     } finally {
       setLoading(false);
@@ -39,7 +39,6 @@ const GerenciarEventos: React.FC = () => {
   // Exclusão de evento
   const handleDelete = async (id: number) => {
     if (!window.confirm('Tem certeza que deseja excluir este evento?')) return;
-    setDeletingId(id);
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL
         ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/festas/${id}`
@@ -53,8 +52,6 @@ const GerenciarEventos: React.FC = () => {
       setEventos(evts => evts.filter(e => e.id !== id));
     } catch {
       alert('Erro ao excluir evento');
-    } finally {
-      setDeletingId(null);
     }
   };
 
@@ -63,11 +60,14 @@ const GerenciarEventos: React.FC = () => {
     setEditId(evento.id);
     setEditData({ ...evento });
   };
+  const handleSelect = (evento: Festa) => {
+    setSelectedId(evento.id === selectedId ? null : evento.id);
+  };
   const cancelEdit = () => {
     setEditId(null);
     setEditData({});
   };
-  const handleEditChange = (key: keyof Festa, value: any) => {
+  const handleEditChange = <K extends keyof Festa>(key: K, value: Festa[K]) => {
     setEditData(prev => ({ ...prev, [key]: value }));
   };
   const saveEdit = async () => {
@@ -97,8 +97,27 @@ const GerenciarEventos: React.FC = () => {
   };
 
   return (
-    <div className="bg-white/90 rounded-2xl shadow-lg p-6">
-      <h2 className="text-2xl font-bold mb-6 text-purple-700">Gerenciar Eventos</h2>
+    <div className="bg-white/90 rounded-2xl shadow-lg p-8 w-full relative">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-purple-700">Gerenciar Eventos</h2>
+        <div className="flex gap-2">
+          <button
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition ${selectedId ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+            disabled={!selectedId || editId !== null}
+            onClick={() => {
+              const evento = eventos.find(e => e.id === selectedId);
+              if (evento) startEdit(evento);
+            }}
+          >Editar</button>
+          <button
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition ${selectedId ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+            disabled={!selectedId || editId !== null}
+            onClick={() => {
+              if (selectedId) handleDelete(selectedId);
+            }}
+          >Excluir</button>
+        </div>
+      </div>
       {loading ? (
         <div className="text-center text-gray-500 py-8">Carregando eventos...</div>
       ) : error ? (
@@ -107,24 +126,38 @@ const GerenciarEventos: React.FC = () => {
         <div className="text-center text-gray-400 py-8">Nenhum evento cadastrado.</div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-[1200px] w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Nome</th>
-                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Data</th>
-                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Cidade</th>
+                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Nome do Evento *</th>
+                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Data *</th>
+                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Horário de Início</th>
+                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Horário de Fim</th>
+                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Cidade *</th>
+                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Local do Evento</th>
+                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Link de Vendas</th>
+                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Descrição Curta</th>
                 <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Destaque</th>
                 <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {eventos.map((evento) => (
-                <tr key={evento.id} className="hover:bg-purple-50 transition">
+                <tr
+                  key={evento.id}
+                  className={`transition cursor-pointer ${selectedId === evento.id ? 'bg-purple-100/60 ring-2 ring-purple-400' : 'hover:bg-purple-50'}`}
+                  onClick={() => handleSelect(evento)}
+                >
                   {editId === evento.id ? (
                     <>
-                      <td className="px-4 py-2"><input className="border rounded px-2 py-1 w-32" value={editData.nome || ''} onChange={e => handleEditChange('nome', e.target.value)} /></td>
-                      <td className="px-4 py-2"><input type="date" className="border rounded px-2 py-1 w-32" value={editData.data ? String(editData.data).slice(0,10) : ''} onChange={e => handleEditChange('data', e.target.value)} /></td>
-                      <td className="px-4 py-2"><input className="border rounded px-2 py-1 w-32" value={editData.cidade || ''} onChange={e => handleEditChange('cidade', e.target.value)} /></td>
+                      <td className="px-4 py-2"><input className="border rounded px-2 py-1 w-40" value={editData.nome || ''} onChange={e => handleEditChange('nome', e.target.value)} required /></td>
+                      <td className="px-4 py-2"><input type="date" className="border rounded px-2 py-1 w-36" value={editData.data ? String(editData.data).slice(0,10) : ''} onChange={e => handleEditChange('data', e.target.value)} required /></td>
+                      <td className="px-4 py-2"><input type="time" className="border rounded px-2 py-1 w-28" value={editData.horaInicio || ''} onChange={e => handleEditChange('horaInicio', e.target.value)} /></td>
+                      <td className="px-4 py-2"><input type="time" className="border rounded px-2 py-1 w-28" value={editData.horaFim || ''} onChange={e => handleEditChange('horaFim', e.target.value)} /></td>
+                      <td className="px-4 py-2"><input className="border rounded px-2 py-1 w-32" value={editData.cidade || ''} onChange={e => handleEditChange('cidade', e.target.value)} required /></td>
+                      <td className="px-4 py-2"><input className="border rounded px-2 py-1 w-32" value={editData.local || ''} onChange={e => handleEditChange('local', e.target.value)} /></td>
+                      <td className="px-4 py-2"><input className="border rounded px-2 py-1 w-40" value={editData.linkVendas || ''} onChange={e => handleEditChange('linkVendas', e.target.value)} /></td>
+                      <td className="px-4 py-2"><input className="border rounded px-2 py-1 w-48" value={editData.descricaoCurta || ''} onChange={e => handleEditChange('descricaoCurta', e.target.value)} /></td>
                       <td className="px-4 py-2">
                         <select className="border rounded px-2 py-1" value={editData.destaque ? 'sim' : 'nao'} onChange={e => handleEditChange('destaque', e.target.value === 'sim')}>
                           <option value="nao">Não</option>
@@ -140,13 +173,17 @@ const GerenciarEventos: React.FC = () => {
                     <>
                       <td className="px-4 py-2 font-semibold text-gray-800">{evento.nome}</td>
                       <td className="px-4 py-2 text-gray-600">{evento.data ? new Date(evento.data).toLocaleDateString('pt-BR') : '-'}</td>
+                      <td className="px-4 py-2 text-gray-600">{evento.horaInicio || '-'}</td>
+                      <td className="px-4 py-2 text-gray-600">{evento.horaFim || '-'}</td>
                       <td className="px-4 py-2 text-gray-600">{evento.cidade}</td>
+                      <td className="px-4 py-2 text-gray-600">{evento.local || '-'}</td>
+                      <td className="px-4 py-2 text-blue-700 underline break-all max-w-[180px]">{evento.linkVendas ? <a href={evento.linkVendas} target="_blank" rel="noopener noreferrer">{evento.linkVendas}</a> : '-'}</td>
+                      <td className="px-4 py-2 text-gray-600 max-w-[220px] truncate" title={evento.descricaoCurta}>{evento.descricaoCurta || '-'}</td>
                       <td className="px-4 py-2">
                         {evento.destaque ? <span className="inline-block px-2 py-1 bg-amber-400 text-white rounded text-xs font-bold">Sim</span> : <span className="inline-block px-2 py-1 bg-gray-200 text-gray-600 rounded text-xs">Não</span>}
                       </td>
                       <td className="px-4 py-2 flex gap-2">
-                        <button className="text-xs text-blue-600 hover:underline mr-2" onClick={() => startEdit(evento)}>Editar</button>
-                        <button className={`text-xs text-red-600 hover:underline ${deletingId === evento.id ? 'opacity-50 pointer-events-none' : ''}`} onClick={() => handleDelete(evento.id)} disabled={deletingId === evento.id}>{deletingId === evento.id ? 'Excluindo...' : 'Excluir'}</button>
+                        {/* Botões removidos da linha, agora fixos no topo */}
                       </td>
                     </>
                   )}
