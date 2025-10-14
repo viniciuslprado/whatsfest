@@ -1,7 +1,7 @@
 // frontend/src/components/modals/FestaDetailsModal.tsx
 import React from 'react';
 import type { Festa } from '../../lib/api'; // Importamos o tipo Festa
-import { FiCalendar, FiMapPin } from 'react-icons/fi';
+import { FiCalendar, FiMapPin, FiClock, FiMap, FiX, FiHome } from 'react-icons/fi';
 
 // Propriedades (Props) que o Modal vai receber
 interface ModalProps {
@@ -69,7 +69,7 @@ const FestaDetailsModal: React.FC<ModalProps> = ({ festa, onClose }) => {
                 </div>
               </div>
               <div className="flex items-center text-gray-800 mb-2">
-                <span className="text-2xl mr-3">⏰</span>
+                <FiClock className="text-2xl mr-3" />
                 <div>
                   <span className="font-semibold text-purple-700">Hora:</span> 
                   <span className="ml-2">{horaFormatada}</span>
@@ -99,27 +99,27 @@ const FestaDetailsModal: React.FC<ModalProps> = ({ festa, onClose }) => {
             {/* Seção do Mapa */}
             <div className="mt-6">
               <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
-                <span className="text-2xl mr-2">🗺️</span>
+                <FiMap className="text-2xl mr-2" />
                 Como Chegar
               </h3>
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg">
                 {/* Link para abrir no Google Maps (sem API key) */}
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-700 mb-3">
+                  <p className="text-gray-700 mb-3 flex items-center gap-2">
                     {festa.local && (
                       <>
-                        📍 <strong>{festa.local}</strong><br />
+                        <FiMapPin className="inline" /> <strong>{festa.local}</strong><br />
                       </>
                     )}
-                    {festa.cidade}
+                    <FiHome className="inline" /> {festa.cidade}
                   </p>
                   <a
                     href={`https://www.google.com/maps/search/${mapSearchTerm}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300"
+                    className="inline-flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 gap-2"
                   >
-                    🗺️ Abrir no Google Maps
+                    <FiMap /> Abrir no Google Maps
                   </a>
                 </div>
               </div>
@@ -128,9 +128,10 @@ const FestaDetailsModal: React.FC<ModalProps> = ({ festa, onClose }) => {
             {/* Botão de Fechar */}
             <button 
               onClick={onClose}
-              className="mt-6 w-full text-center bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+              className="mt-6 w-full text-center bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              aria-label="Fechar"
             >
-              ✖️ Fechar
+              <FiX /> Fechar
             </button>
           </div>
         </div>

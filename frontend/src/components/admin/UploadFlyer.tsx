@@ -1,6 +1,6 @@
 
 import React, { useRef, useState, useEffect } from 'react';
-import { FiUploadCloud, FiImage, FiTrash2, FiCheckCircle } from 'react-icons/fi';
+import { FiUploadCloud, FiImage, FiTrash2, FiCheckCircle, FiX } from 'react-icons/fi';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com' : 'http://localhost:3000');
 
@@ -122,7 +122,7 @@ const UploadFlyer: React.FC = () => {
                 setFileName('');
                 setFile(null);
               }}
-            >✕</button>
+                    ><FiX /></button>
             <div className="p-8 flex flex-col items-center">
               <h3 className="text-xl font-bold mb-4 text-pink-600 flex items-center gap-2"><FiUploadCloud /> Upload de Flyer</h3>
               <div

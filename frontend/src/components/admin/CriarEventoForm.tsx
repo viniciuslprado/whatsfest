@@ -261,7 +261,7 @@ const CriarEventoForm: React.FC<CriarEventoFormProps> = ({ onCreated, initialDat
         className="w-full py-3 px-6 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg shadow-md hover:from-purple-600 hover:to-pink-600 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading && <span className="animate-spin mr-2">⏳</span>}
-        Criar Evento
+        {isEdit ? 'Salvar atualizações' : 'Criar Evento'}
       </button>
     </form>
   );

@@ -430,7 +430,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
                   color: '#6b7280',
                   fontSize: '14px'
                 }}>
-                  <div style={{ marginBottom: '8px' }}>🔍</div>
+                  <div style={{ marginBottom: '8px' }}><FaSearch /></div>
                   Nenhuma cidade encontrada para "{localFilters.cidade}"
                 </div>
               )}
@@ -537,7 +537,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            🗑️ Limpar Filtros
+            <FiTrash2 style={{ marginRight: 6, verticalAlign: 'middle' }} /> Limpar Filtros
           </button>
         )}
       </div>
@@ -555,7 +555,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
           alignItems: 'center',
           gap: '8px'
         }}>
-          ⚠️ {locationError}
+          <FiX style={{ marginRight: 6, verticalAlign: 'middle', color: '#dc2626' }} /> {locationError}
         </div>
       )}
       

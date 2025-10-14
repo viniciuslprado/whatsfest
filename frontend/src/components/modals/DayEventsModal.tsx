@@ -1,7 +1,7 @@
 
 import React from 'react';
 import type { Festa } from '../../lib/api';
-import { FiCalendar, FiMapPin, FiStar } from 'react-icons/fi';
+import { FiCalendar, FiMapPin, FiStar, FiClock, FiHome, FiX } from 'react-icons/fi';
 
 interface DayEventsModalProps {
   selectedDate: Date | null;
@@ -30,11 +30,11 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1000] p-1 sm:p-4"
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1000] p-1 sm:p-2"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl p-2 sm:p-6 md:p-8 max-w-md sm:max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
+        className="bg-white rounded-2xl p-1 sm:p-3 md:p-4 max-w-md sm:max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -47,8 +47,9 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
             onClick={onClose}
             className="bg-gray-100 hover:bg-gray-200 border-none rounded-full w-10 h-10 flex items-center justify-center text-xl text-gray-500 transition-all duration-200"
             type="button"
+            aria-label="Fechar"
           >
-            ✕
+            <FiX />
           </button>
         </div>
 
@@ -74,7 +75,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
               return (
                 <div
                   key={evento.id}
-                  className="relative bg-gradient-to-br from-slate-50 to-slate-100 border border-gray-200 rounded-2xl p-0 overflow-hidden shadow-xl flex flex-col sm:flex-row gap-0 sm:gap-4"
+                  className="relative bg-gradient-to-br from-slate-50 to-slate-100 border border-gray-200 rounded-2xl p-0 overflow-hidden shadow-xl flex flex-col sm:flex-row gap-0 sm:gap-2"
                 >
                   {/* Imagem/Flyer do Evento */}
                   <div className="relative w-full sm:w-40 flex-shrink-0">
@@ -92,43 +93,43 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
                     )}
                   </div>
                   {/* Conteúdo do Evento */}
-                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-center">
-                    <h3 className="text-lg sm:text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-1 sm:mb-2">{evento.nome}</h3>
+                  <div className="p-2 sm:p-2 flex-1 flex flex-col justify-center">
+                    <h3 className="text-base sm:text-lg font-extrabold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-1 sm:mb-1">{evento.nome}</h3>
                     {evento.descricaoCurta && (
-                      <p className="text-xs sm:text-sm font-medium text-purple-600 mb-2 sm:mb-4 px-2 py-1 bg-purple-100 rounded-full inline-block">{evento.descricaoCurta}</p>
+                      <p className="text-xs sm:text-xs font-medium text-purple-600 mb-1 sm:mb-2 px-2 py-1 bg-purple-100 rounded-full inline-block">{evento.descricaoCurta}</p>
                     )}
-                    <div className="space-y-2 sm:space-y-4 border-t border-gray-200 pt-3 sm:pt-6">
-                      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-2 sm:p-4 rounded-xl">
-                        <div className="flex items-center text-gray-800 mb-1 sm:mb-2">
-                          <FiCalendar className="text-xl sm:text-2xl mr-2 sm:mr-3" />
+                    <div className="space-y-1 sm:space-y-2 border-t border-gray-200 pt-2 sm:pt-3">
+                      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-1 sm:p-2 rounded-xl">
+                        <div className="flex items-center text-gray-800 mb-1">
+                          <FiCalendar className="text-lg sm:text-xl mr-2 sm:mr-2" />
                           <div>
                             <span className="font-semibold text-purple-700">Data:</span> 
-                            <span className="ml-1 sm:ml-2">{dataFormatada}</span>
+                            <span className="ml-1 sm:ml-1">{dataFormatada}</span>
                           </div>
                         </div>
-                        <div className="flex items-center text-gray-800 mb-1 sm:mb-2">
-                          <span className="text-xl sm:text-2xl mr-2 sm:mr-3">⏰</span>
+                        <div className="flex items-center text-gray-800 mb-1">
+                          <FiClock className="text-lg sm:text-xl mr-2 sm:mr-2" />
                           <div>
                             <span className="font-semibold text-purple-700">Hora:</span> 
-                            <span className="ml-1 sm:ml-2">{hora}</span>
+                            <span className="ml-1 sm:ml-1">{hora}</span>
                           </div>
                         </div>
-                        <div className="flex items-center text-gray-800 mb-1 sm:mb-2">
-                          <FiMapPin className="text-xl sm:text-2xl mr-2 sm:mr-3" />
+                        <div className="flex items-center text-gray-800 mb-1">
+                          <FiMapPin className="text-lg sm:text-xl mr-2 sm:mr-2" />
                           <div>
                             <span className="font-semibold text-purple-700">Local:</span> 
-                            <span className="ml-1 sm:ml-2">{evento.local || '-'}</span>
+                            <span className="ml-1 sm:ml-1">{evento.local || '-'} </span>
                           </div>
                         </div>
                         <div className="flex items-center text-gray-800">
-                          <span className="text-xl sm:text-2xl mr-2 sm:mr-3">🏙️</span>
+                          <FiHome className="text-lg sm:text-xl mr-2 sm:mr-2" />
                           <div>
                             <span className="font-semibold text-purple-700">Cidade:</span> 
-                            <span className="ml-1 sm:ml-2">{evento.cidade}</span>
+                            <span className="ml-1 sm:ml-1">{evento.cidade}</span>
                           </div>
                         </div>
                         {evento.linkVendas && (
-                          <div className="flex items-center text-gray-800 mt-1 sm:mt-2">
+                          <div className="flex items-center text-gray-800 mt-1">
                             <a href={evento.linkVendas} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline font-semibold">Comprar Ingressos</a>
                           </div>
                         )}

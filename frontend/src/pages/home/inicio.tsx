@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import DayEventsModal from '../../components/modals/DayEventsModal';
 import FlyerCarousel from '../../components/Flyer/FlyerCarousel';
 import EventFilters from '../../components/filters/EventFilters';
 import Calendar from '../../components/calendar/Calendar';
@@ -14,6 +15,8 @@ interface InicioProps {
 
 const Inicio: React.FC<InicioProps> = ({ filters, onFiltersChange, festas }) => {
   const [showResults, setShowResults] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Festa | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Função para passar para EventFilters, para saber quando clicar em pesquisar
   const handleFiltersChange = (newFilters: FilterState) => {
@@ -40,7 +43,14 @@ const Inicio: React.FC<InicioProps> = ({ filters, onFiltersChange, festas }) => 
           ) : (
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {festas.map(ev => (
-                <li key={ev.id} style={{ borderBottom: '1px solid #eee', padding: '10px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <li
+                  key={ev.id}
+                  style={{ borderBottom: '1px solid #eee', padding: '10px 0', display: 'flex', flexDirection: 'column', gap: 2, cursor: 'pointer' }}
+                  onClick={() => {
+                    setSelectedEvent(ev);
+                    setModalOpen(true);
+                  }}
+                >
                   <span style={{ fontWeight: 600, color: '#1e293b' }}>{ev.nome}</span>
                   <span style={{ color: '#6b7280', fontSize: 13 }}>{ev.data ? new Date(ev.data).toLocaleDateString('pt-BR') : ''} {ev.cidade && `- ${ev.cidade}`}</span>
                 </li>
@@ -51,6 +61,15 @@ const Inicio: React.FC<InicioProps> = ({ filters, onFiltersChange, festas }) => 
       )}
 
       <Calendar festas={festas} />
+
+      {/* Modal de detalhes do evento ao clicar na lista */}
+      {modalOpen && selectedEvent && (
+        <DayEventsModal
+          selectedDate={selectedEvent.data ? new Date(selectedEvent.data) : null}
+          eventos={[selectedEvent]}
+          onClose={() => { setModalOpen(false); setSelectedEvent(null); }}
+        />
+      )}
     </div>
   );
 };

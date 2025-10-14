@@ -2,6 +2,7 @@
 
 
 import React, { useEffect, useState } from 'react';
+import { FiX } from 'react-icons/fi';
 import type { Festa } from '../../lib/api';
 import CriarEventoForm from './CriarEventoForm';
 
@@ -112,7 +113,7 @@ const GerenciarEventos: React.FC = () => {
             <button
               className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold z-10"
               onClick={() => setShowCriar(false)}
-            >✕</button>
+            ><FiX /></button>
             <CriarEventoForm onCreated={handleEventoCriado} />
           </div>
         </div>
@@ -125,11 +126,11 @@ const GerenciarEventos: React.FC = () => {
         <div className="text-center text-gray-400 py-8">Nenhum evento cadastrado.</div>
       ) : (
         <div className="overflow-x-auto max-w-full">
-          <table className="min-w-[280px] sm:min-w-[400px] w-full divide-y divide-gray-200 text-xs sm:text-sm">
+          <table className="min-w-[220px] sm:min-w-[320px] w-full divide-y divide-gray-200 text-xs sm:text-sm">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Nome do Evento *</th>
-                <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Data *</th>
+                <th className="px-2 py-2 text-left text-xs font-bold text-gray-700 uppercase rounded-l-xl bg-gray-50">Nome do Evento *</th>
+                <th className="px-2 py-2 text-left text-xs font-bold text-gray-700 uppercase rounded-r-xl bg-gray-50">Data *</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -142,8 +143,8 @@ const GerenciarEventos: React.FC = () => {
                   style={selectedId === evento.id ? { boxShadow: '0 0 0 2px #ec4899, 0 4px 16px 0 rgba(139,92,246,0.10)' } : {}}
                   onClick={() => handleSelect(evento)}
                 >
-                  <td className="px-4 py-2 font-semibold text-gray-800">{evento.nome}</td>
-                  <td className="px-4 py-2 text-gray-600">{evento.data ? new Date(evento.data).toLocaleDateString('pt-BR') : '-'}</td>
+                  <td className="px-2 py-2 font-semibold text-gray-800 rounded-l-xl bg-white/80">{evento.nome}</td>
+                  <td className="px-2 py-2 text-gray-600 rounded-r-xl bg-white/80">{evento.data ? new Date(evento.data).toLocaleDateString('pt-BR') : '-'}</td>
                 </tr>
               ))}
             </tbody>
@@ -157,7 +158,7 @@ const GerenciarEventos: React.FC = () => {
             <button
               className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold z-10"
               onClick={cancelEdit}
-            >✕</button>
+            ><FiX /></button>
             <CriarEventoForm
               initialData={editData}
               onCreated={async () => {

@@ -25,9 +25,9 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
 
           {/* Sistema de Abas */}
           <div className="flex flex-wrap gap-1 sm:gap-2 border-t border-white/20 pt-3 sm:pt-5 mt-3 sm:mt-5">
-            {[
-              { id: 'gerenciar', label: '📝 Gerenciar Eventos', icon: FaCog },
-              { id: 'flyers', label: '🎨 Upload Flyers', icon: FaImage }
+            {[ 
+              { id: 'gerenciar', label: 'Gerenciar Eventos', icon: FaCog },
+              { id: 'flyers', label: 'Upload Flyers', icon: FaImage }
             ].map(tab => (
               <button
                 key={tab.id}

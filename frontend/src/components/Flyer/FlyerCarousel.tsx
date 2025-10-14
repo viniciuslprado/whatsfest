@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiChevronLeft, FiChevronRight, FiCalendar, FiMapPin, FiStar } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiCalendar, FiMapPin, FiStar, FiShoppingCart } from 'react-icons/fi';
 import { GiPartyHat } from 'react-icons/gi';
 
 interface Flyer {
@@ -246,7 +246,7 @@ const FlyerCarousel: React.FC = () => {
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                🎫 Comprar Ingresso
+                <FiShoppingCart style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle' }} /> Comprar Ingresso
               </a>
             )}
           </div>
