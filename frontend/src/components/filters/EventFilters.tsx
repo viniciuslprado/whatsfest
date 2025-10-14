@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { FaSearch } from 'react-icons/fa';
+import { FiTrash2, FiX } from 'react-icons/fi';
 import { MdEvent } from 'react-icons/md';
 import { FiSearch, FiMapPin } from 'react-icons/fi';
 import useLocation from '../filters/useLocation';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GiPartyPopper } from 'react-icons/gi';
-import { FaTimes, FaBars, FaHome, FaInfoCircle, FaCog } from 'react-icons/fa';
+import { FaTimes, FaBars, FaHome, FaInfoCircle, FaCog, FaWhatsapp } from 'react-icons/fa';
 
 type Page = 'inicio' | 'admin' | 'login' | 'sobre';
 
@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         {/* Navegação */}
         <nav
           className={`
-            ${menuOpen ? 'absolute top-16 right-4 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-2xl shadow-2xl p-6 z-50 flex flex-col gap-3 min-w-[180px]' :
+            ${menuOpen ? 'absolute top-16 right-4 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-2xl shadow-2xl p-6 z-50 flex flex-col gap-3 min-w-[220px]' :
             'hidden sm:flex flex-row gap-6 items-center'}
           `}
         >
@@ -57,6 +57,17 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           >
             <FaInfoCircle /> Sobre
           </button>
+
+          {/* Link WhatsApp */}
+          <a
+            href="https://chat.whatsapp.com/DVbSwHcYZqJ3lFapfelkN6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold bg-green-500 hover:bg-green-600 text-white transition-all shadow border-2 border-green-600"
+            style={{ minWidth: 0 }}
+          >
+            <FaWhatsapp size={20} /> Grupo WhatsApp
+          </a>
 
           {/* Admin sempre no final */}
           <button

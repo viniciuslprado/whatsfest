@@ -129,8 +129,16 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
                           </div>
                         </div>
                         {evento.linkVendas && (
-                          <div className="flex items-center text-gray-800 mt-1">
-                            <a href={evento.linkVendas} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline font-semibold">Comprar Ingressos</a>
+                          <div className="flex items-center mt-2">
+                            <a
+                              href={evento.linkVendas}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full text-center bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-base sm:text-lg"
+                              style={{ letterSpacing: 1 }}
+                            >
+                              Comprar Ingressos
+                            </a>
                           </div>
                         )}
                       </div>
