@@ -14,11 +14,8 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
   eventos,
   onClose
 }) => {
-  // removido selectedFesta
+
   if (!selectedDate) return null;
-
-
-
 
   return (
     <div
@@ -58,7 +55,17 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
                 <span className="text-xs sm:text-sm font-semibold text-white bg-pink-500 rounded-full px-3 py-1">{eventos.length}</span>
               </div>
               <div className="text-xs sm:text-sm text-gray-500 mt-1">
-                {selectedDate && selectedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                {selectedDate &&
+                  (() => {
+                    const meses = [
+                      'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+                      'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+                    ];
+                    const dia = selectedDate.getDate();
+                    const mes = meses[selectedDate.getMonth()];
+                    return `${dia} de ${mes}`;
+                  })()
+                }
               </div>
             </div>
             <div className="flex flex-col gap-4">
@@ -69,7 +76,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
               const dataFormatada = evento.data ? new Date(evento.data).toLocaleDateString('pt-BR', {
                 weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
               }) : 'Data não informada';
-              // removido mapSearchTerm
+             
               return (
                 <div key={evento.id} className="relative flex flex-col items-stretch">
                   {evento.destaque && (
@@ -78,16 +85,6 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
                     </div>
                   )}
                   <div className="relative bg-white border border-gray-200 rounded-2xl p-0 overflow-hidden shadow-xl flex flex-col sm:flex-row gap-0 sm:gap-2">
-                    {/* Imagem/Flyer do Evento */}
-                    <div className="relative w-full sm:w-40 flex-shrink-0">
-                      <img 
-                        src={evento.urlImagemFlyer || 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'} 
-                        alt={`Flyer da ${evento.nome}`} 
-                        className="w-full h-40 sm:h-48 object-cover rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none"
-                        onError={e => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'; }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none"></div>
-                    </div>
                     {/* Conteúdo do Evento */}
                     <div className="p-2 sm:p-2 flex-1 flex flex-col justify-center">
                     <h3 className="text-base sm:text-lg font-extrabold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-1 sm:mb-1">{evento.nome}</h3>
