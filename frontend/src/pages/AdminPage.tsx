@@ -1,6 +1,6 @@
 import React from 'react';
 import PrimaryButton from '../components/button/PrimaryButton';
-import SecondaryButton from '../components/button/SecondaryButton';
+import DangerButton from '../components/button/DangerButton';
 import { FaArrowLeft, FaCog } from 'react-icons/fa';
 import GerenciarEventos from '../components/admin/events/GerenciarEventos';
 
@@ -16,13 +16,13 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white m-0 flex items-center gap-3">
               <FaCog /> Painel Administrativo
             </h1>
-            <SecondaryButton
+            <DangerButton
               onClick={onLogout}
-              className="bg-red-600/80 border-none text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg cursor-pointer text-xs sm:text-sm font-bold flex items-center gap-2 hover:bg-red-700/90 transition"
+              className="px-4 py-2 sm:px-6 sm:py-3 rounded-lg cursor-pointer text-xs sm:text-sm font-bold flex items-center gap-2"
               type="button"
             >
               <FaArrowLeft /> Sair
-            </SecondaryButton>
+            </DangerButton>
           </div>
 
           {/* Sistema de Abas */}

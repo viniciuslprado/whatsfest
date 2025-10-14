@@ -57,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           <SecondaryButton
             onClick={() => handleNavigate('sobre')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
-              ${currentPage === 'sobre' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+              ${currentPage === 'sobre' ? 'bg-white/20 shadow' : 'hover:bg-white/10'}`}
             type="button"
           >
             <FaInfoCircle /> Sobre
@@ -78,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           <SecondaryButton
             onClick={() => handleNavigate('login')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border-2 border-white/30 transition-all
-              ${currentPage === 'login' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+              ${currentPage === 'login' ? 'bg-white/20 shadow' : 'hover:bg-white/10'}`}
             type="button"
           >
             <FaCog /> Admin
