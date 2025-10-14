@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             href="https://chat.whatsapp.com/DVbSwHcYZqJ3lFapfelkN6"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold bg-green-500 hover:bg-green-600 text-white transition-all shadow border-2 border-green-600"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border-2 border-white/30 transition-all hover:bg-white/10 text-white/90"
             style={{ minWidth: 0 }}
           >
             <FaWhatsapp size={20} /> Grupo WhatsApp

@@ -26,7 +26,6 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
     });
   };
 
-  // removido handleEventClick
 
   return (
     <div
@@ -73,27 +72,25 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
               }) : 'Data não informada';
               // removido mapSearchTerm
               return (
-                <div
-                  key={evento.id}
-                  className="relative bg-gradient-to-br from-slate-50 to-slate-100 border border-gray-200 rounded-2xl p-0 overflow-hidden shadow-xl flex flex-col sm:flex-row gap-0 sm:gap-2"
-                >
-                  {/* Imagem/Flyer do Evento */}
-                  <div className="relative w-full sm:w-40 flex-shrink-0">
-                    <img 
-                      src={evento.urlImagemFlyer || 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'} 
-                      alt={`Flyer da ${evento.nome}`} 
-                      className="w-full h-40 sm:h-48 object-cover rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none"
-                      onError={e => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'; }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none"></div>
-                    {evento.destaque && (
-                      <div className="absolute top-2 right-2 bg-gradient-to-br from-amber-300 to-orange-400 text-white px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow">
-                        <FiStar className="inline mr-1" /> Destaque
-                      </div>
-                    )}
-                  </div>
-                  {/* Conteúdo do Evento */}
-                  <div className="p-2 sm:p-2 flex-1 flex flex-col justify-center">
+                <div key={evento.id} className="relative flex flex-col items-stretch">
+                  {evento.destaque && (
+                    <div className="mx-auto mb-1 flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold text-amber-700 bg-amber-100 border border-amber-200 shadow-sm" style={{position: 'relative', top: '0', zIndex: 2, width: 'fit-content'}}>
+                      <FiStar className="inline mr-1" /> Destaque
+                    </div>
+                  )}
+                  <div className="relative bg-white border border-gray-200 rounded-2xl p-0 overflow-hidden shadow-xl flex flex-col sm:flex-row gap-0 sm:gap-2">
+                    {/* Imagem/Flyer do Evento */}
+                    <div className="relative w-full sm:w-40 flex-shrink-0">
+                      <img 
+                        src={evento.urlImagemFlyer || 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'} 
+                        alt={`Flyer da ${evento.nome}`} 
+                        className="w-full h-40 sm:h-48 object-cover rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none"
+                        onError={e => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'; }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-2xl sm:rounded-l-2xl sm:rounded-tr-none"></div>
+                    </div>
+                    {/* Conteúdo do Evento */}
+                    <div className="p-2 sm:p-2 flex-1 flex flex-col justify-center">
                     <h3 className="text-base sm:text-lg font-extrabold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-1 sm:mb-1">{evento.nome}</h3>
                     {evento.descricaoCurta && (
                       <p className="text-xs sm:text-xs font-medium text-purple-600 mb-1 sm:mb-2 px-2 py-1 bg-purple-100 rounded-full inline-block">{evento.descricaoCurta}</p>
@@ -134,7 +131,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
                               href={evento.linkVendas}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-full text-center bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-base sm:text-lg"
+                              className="w-full text-center bg-gradient-to-r from-blue-500 via-pink-500 to-fuchsia-500 hover:from-blue-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-base sm:text-lg"
                               style={{ letterSpacing: 1 }}
                             >
                               Comprar Ingressos
@@ -142,6 +139,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
                           </div>
                         )}
                       </div>
+                    </div>
                     </div>
                   </div>
                 </div>

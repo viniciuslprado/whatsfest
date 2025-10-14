@@ -538,7 +538,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            <FiTrash2 style={{ marginRight: 6, verticalAlign: 'middle' }} /> Limpar Filtros
+            Limpar Filtros <FiTrash2 style={{ marginLeft: 6, verticalAlign: 'middle' }} />
           </button>
         )}
       </div>
