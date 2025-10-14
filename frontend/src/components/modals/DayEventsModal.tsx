@@ -48,11 +48,21 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
               <FiCalendar size={64} color="#9ca3af" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Nenhum evento neste dia</h3>
-            <p className="m-0">Que tal cadastrar um evento para esta data?</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
-            {eventos.map((evento) => {
+          <React.Fragment>
+            {/* Cabeçalho acima dos cards */}
+            <div className="mb-4 text-center">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                <span className="text-base sm:text-lg font-bold text-purple-700">Eventos do dia</span>
+                <span className="text-xs sm:text-sm font-semibold text-white bg-pink-500 rounded-full px-3 py-1">{eventos.length}</span>
+              </div>
+              <div className="text-xs sm:text-sm text-gray-500 mt-1">
+                {selectedDate && selectedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              {eventos.map((evento) => {
               const hora = evento.horaInicio ? 
                 `${evento.horaInicio}${evento.horaFim ? ` - ${evento.horaFim}` : ''}` : 
                 'Horário não informado';
@@ -134,7 +144,8 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
                 </div>
               );
             })}
-          </div>
+            </div>
+          </React.Fragment>
         )}
       </div>
     </div>
