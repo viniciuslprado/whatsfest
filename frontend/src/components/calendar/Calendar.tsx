@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { FaRegStar } from 'react-icons/fa';
 import DayEventsModal from '../modals/DayEventsModal';
 import type { Festa } from '../../lib/api';
 
@@ -67,15 +68,16 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
       });
       const hasEvent = festasDoDia.length > 0;
 
-      // Fundo gradiente suave para dias com evento
-  // Gradiente suavemente mais escuro para melhor contraste
-  const gradBg = hasEvent ? 'bg-gradient-to-br from-pink-100 via-blue-100 to-blue-100' : 'bg-gray-50';
+      // Novo gradiente de destaque para dias com evento
+      const gradBg = hasEvent
+        ? 'bg-gradient-to-br from-yellow-300 via-pink-400 to-fuchsia-500'
+        : 'bg-gray-50';
       // Sombra colorida sutil para dias com evento
-      const shadow = hasEvent ? 'shadow-[0_2px_8px_0_rgba(236,72,153,0.15)]' : '';
-      // Badge (bolinha) no canto superior direito (mobile)
-      const badge = hasEvent ? (
-        <span className="absolute top-1 right-1 bg-pink-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 shadow-sm sm:hidden">
-          {festasDoDia.length}
+      const shadow = hasEvent ? 'shadow-[0_2px_8px_0_rgba(236,72,153,0.18)]' : '';
+      // Ícone discreto para dias com evento (centralizado abaixo do número)
+      const eventIcon = hasEvent ? (
+        <span className="flex items-center justify-center mt-0.5">
+          <FaRegStar className="text-yellow-500 text-[13px] sm:text-[14px] drop-shadow-sm" title="Tem evento" />
         </span>
       ) : null;
 
@@ -84,33 +86,13 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
           key={day}
           type="button"
           className={`relative flex flex-col items-center justify-center rounded-lg min-h-[44px] aspect-square select-none transition cursor-pointer border border-gray-200 ${gradBg} ${shadow}
-            hover:bg-blue-50 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-pink-100`}
+            hover:brightness-105 hover:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-200`}
           onClick={() => handleDayClick(day, festasDoDia)}
         >
-          {/* Badge no canto superior direito (mobile) */}
-          {badge}
           {/* Número do dia */}
-          <span className={`font-bold text-base leading-none ${hasEvent ? 'text-pink-700' : 'text-gray-700'} flex items-center justify-center`}>{day}</span>
-          {/* Mobile: número de eventos (como antes, para comparação) */}
-          {hasEvent && (
-            <span className="mt-1 text-xs font-semibold bg-pink-100 text-pink-700 rounded-full px-2 py-0.5 border border-pink-200 sm:hidden">
-              {festasDoDia.length} evento{festasDoDia.length > 1 ? 's' : ''}
-            </span>
-          )}
-          {/* Desktop: nomes das festas, um por linha, cada uma em um retângulo cinza claro */}
-          {hasEvent && (
-            <div className="hidden sm:flex flex-col items-center mt-1 w-full gap-1">
-              {festasDoDia.map((festa, idx) => (
-                <span
-                  key={idx}
-                  className="text-xs text-gray-800 font-semibold truncate w-full text-center bg-gray-100 border border-gray-300 rounded-md px-1 py-0.5"
-                  title={festa.nome}
-                >
-                  {festa.nome}
-                </span>
-              ))}
-            </div>
-          )}
+          <span className={`font-bold text-base leading-none ${hasEvent ? 'text-fuchsia-900' : 'text-gray-700'} flex items-center justify-center`}>{day}</span>
+          {/* Ícone de evento, pequeno e centralizado */}
+          {eventIcon}
         </button>
       );
     }

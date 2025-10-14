@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import authAdmin from './middlewares/authAdmin';
 import { adminLogin } from './controllers/adminController';
 import cidadesData from './data/cidadesBrasil.js';
-import flyerRoutes from './flyerRoutes';
+import flyerRoutes from './routes/flyerRoutes';
 import path from 'path';
 
 dotenv.config();

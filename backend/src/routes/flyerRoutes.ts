@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { Router } from 'express';
-import authAdmin from './middlewares/authAdmin';
+import authAdmin from '../middlewares/authAdmin';
 
 const router = Router();
 

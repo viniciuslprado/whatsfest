@@ -19,10 +19,13 @@ const initialFormData: FestaData = {
 
 interface CriarEventoFormProps {
   onCreated?: () => void;
+  initialData?: Partial<FestaData>;
+  isEdit?: boolean;
+  eventId?: number;
 }
 
-const CriarEventoForm: React.FC<CriarEventoFormProps> = ({ onCreated }) => {
-  const [formData, setFormData] = useState<FestaData>(initialFormData);
+const CriarEventoForm: React.FC<CriarEventoFormProps> = ({ onCreated, initialData, isEdit, eventId }) => {
+  const [formData, setFormData] = useState<FestaData>({ ...initialFormData, ...initialData });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | '' }>({ text: '', type: '' });
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
@@ -74,6 +77,7 @@ const CriarEventoForm: React.FC<CriarEventoFormProps> = ({ onCreated }) => {
     setCitySuggestions([]);
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -84,10 +88,28 @@ const CriarEventoForm: React.FC<CriarEventoFormProps> = ({ onCreated }) => {
         setLoading(false);
         return;
       }
-  await criarNovaFesta(formData);
-  setMessage({ text: 'Evento criado com sucesso!', type: 'success' });
-  setFormData(initialFormData);
-  if (onCreated) onCreated();
+      if (isEdit && eventId) {
+        // Editar evento existente
+        const apiUrl = import.meta.env.VITE_API_BASE_URL
+          ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/festas/${eventId}`
+          : (import.meta.env.PROD ? `https://whatsfest-backend.onrender.com/api/v1/festas/${eventId}` : `http://localhost:3000/api/v1/festas/${eventId}`);
+        const response = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('adminToken') || ''}`
+          },
+          body: JSON.stringify(formData)
+        });
+        if (!response.ok) throw new Error('Erro ao editar evento');
+        setMessage({ text: 'Evento editado com sucesso!', type: 'success' });
+      } else {
+        // Criar novo evento
+        await criarNovaFesta(formData);
+        setMessage({ text: 'Evento criado com sucesso!', type: 'success' });
+        setFormData(initialFormData);
+      }
+      if (onCreated) onCreated();
     } catch (error) {
       setMessage({ text: error instanceof Error ? error.message : 'Erro ao criar evento', type: 'error' });
     } finally {
@@ -96,7 +118,7 @@ const CriarEventoForm: React.FC<CriarEventoFormProps> = ({ onCreated }) => {
   };
 
   return (
-  <form onSubmit={handleSubmit} className="max-w-4xl w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-10 mt-8">
+  <form onSubmit={handleSubmit} className="max-w-lg sm:max-w-2xl w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-2 sm:p-4 md:p-8 mt-4 sm:mt-8 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 text-xs sm:text-sm">
       <h2 className="text-2xl font-bold mb-6 text-center text-purple-700">Criar Novo Evento</h2>
 
       {/* Nome do Evento */}

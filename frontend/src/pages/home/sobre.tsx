@@ -33,12 +33,12 @@ const Sobre: React.FC = () => (
     </a>
     {/* Botão do Instagram */}
     <a
-      href="https://instagram.com/whatsfest"
+      href="https://www.instagram.com/whatsfest/"
       className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-br from-pink-500 to-yellow-400 hover:from-pink-600 hover:to-yellow-500 text-white font-bold text-lg shadow transition mb-4 ml-2"
       target="_blank"
       rel="noopener noreferrer"
     >
-      <FaInstagram /> @whatsfests
+      <FaInstagram /> @whatsfest
     </a>
   </section>
 );
