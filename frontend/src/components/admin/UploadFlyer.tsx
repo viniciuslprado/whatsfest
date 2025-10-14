@@ -4,11 +4,7 @@ import { FiUploadCloud, FiImage, FiTrash2, FiCheckCircle } from 'react-icons/fi'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com' : 'http://localhost:3000');
 
-interface UploadFlyerProps {
-  onAfterUpload?: () => void;
-}
-
-const UploadFlyer: React.FC<UploadFlyerProps> = ({ onAfterUpload }) => {
+const UploadFlyer: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState('');
   const [file, setFile] = useState<File | null>(null);
