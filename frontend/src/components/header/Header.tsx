@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import PrimaryButton from '../button/PrimaryButton';
+import SecondaryButton from '../button/SecondaryButton';
 import { GiPartyPopper } from 'react-icons/gi';
 import { FaTimes, FaBars, FaHome, FaInfoCircle, FaCog, FaWhatsapp } from 'react-icons/fa';
 
@@ -27,13 +29,14 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         </div>
 
         {/* Menu Hamburguer Mobile */}
-        <button
+        <SecondaryButton
           className="sm:hidden ml-auto p-2 rounded-full hover:bg-white/10 focus:outline-none"
           aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
           onClick={() => setMenuOpen((v) => !v)}
+          type="button"
         >
           {menuOpen ? <FaTimes size={28} /> : <FaBars size={28} />}
-        </button>
+        </SecondaryButton>
 
         {/* Navegação */}
         <nav
@@ -43,20 +46,22 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           `}
         >
           {/* Botões principais */}
-          <button
+          <PrimaryButton
             onClick={() => handleNavigate('inicio')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
               ${currentPage === 'inicio' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+            type="button"
           >
             <FaHome /> Início
-          </button>
-          <button
+          </PrimaryButton>
+          <SecondaryButton
             onClick={() => handleNavigate('sobre')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
               ${currentPage === 'sobre' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+            type="button"
           >
             <FaInfoCircle /> Sobre
-          </button>
+          </SecondaryButton>
 
           {/* Link WhatsApp */}
           <a
@@ -70,13 +75,14 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           </a>
 
           {/* Admin sempre no final */}
-          <button
+          <SecondaryButton
             onClick={() => handleNavigate('login')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border-2 border-white/30 transition-all
               ${currentPage === 'login' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+            type="button"
           >
             <FaCog /> Admin
-          </button>
+          </SecondaryButton>
         </nav>
       </div>
     </header>

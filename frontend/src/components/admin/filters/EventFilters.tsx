@@ -1,9 +1,10 @@
 import * as React from 'react';
+import Input from '../../inputs/Input';
 import { FaSearch } from 'react-icons/fa';
 import { FiTrash2, FiX } from 'react-icons/fi';
 import { MdEvent } from 'react-icons/md';
 import { FiSearch, FiMapPin } from 'react-icons/fi';
-import useLocation from '../filters/useLocation';
+import useLocation from '../../../hooks/useLocation';
 
 
 export interface FilterState {
@@ -12,7 +13,7 @@ export interface FilterState {
   data: string;
   userLatitude?: number;
   userLongitude?: number;
-  maxDistance?: number; // km
+  maxDistance?: number; 
 }
 
 interface EventFiltersProps {
@@ -266,11 +267,11 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
           }}>
             <MdEvent /> Nome do evento
           </label>
-          <input
+          <Input
             type="text"
             placeholder="Ex: Festa de Ano Novo"
             value={localFilters.nomeEvento}
-            onChange={(e) => handleInputChange('nomeEvento', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('nomeEvento', e.target.value)}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -280,11 +281,11 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
               transition: 'border-color 0.3s ease',
               boxSizing: 'border-box'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.currentTarget.style.borderColor = '#8b5cf6';
               e.currentTarget.style.outline = 'none';
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.currentTarget.style.borderColor = '#e5e7eb';
             }}
           />
@@ -304,11 +305,11 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
             <FiMapPin /> Cidade
           </label>
           <div style={{ position: 'relative', display: 'flex', gap: '8px' }}>
-            <input
+            <Input
               type="text"
               placeholder="Digite uma cidade (ex: São Paulo, SP)"
               value={localFilters.cidade}
-              onChange={(e) => handleCitySearch(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCitySearch(e.target.value)}
               style={{
                 flex: 1,
                 padding: '12px 16px',
@@ -318,7 +319,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
                 transition: 'border-color 0.3s ease',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => {
+              onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
                 e.currentTarget.style.borderColor = '#8b5cf6';
                 e.currentTarget.style.outline = 'none';
                 
@@ -326,7 +327,7 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
                   setShowSuggestions(true);
                 }
               }}
-              onBlur={(e) => {
+              onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
                 e.currentTarget.style.borderColor = '#e5e7eb';
                 // Delay maior para permitir click nas sugestões sem conflito
                 setTimeout(() => setShowSuggestions(false), 300);
@@ -453,10 +454,10 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
           }}>
             <MdEvent /> Data do evento
           </label>
-          <input
+          <Input
             type="date"
             value={localFilters.data}
-            onChange={(e) => handleInputChange('data', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('data', e.target.value)}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -466,11 +467,11 @@ const EventFilters: React.FC<EventFiltersProps> = ({ filters, onFiltersChange })
               transition: 'border-color 0.3s ease',
               boxSizing: 'border-box'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.currentTarget.style.borderColor = '#8b5cf6';
               e.currentTarget.style.outline = 'none';
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.currentTarget.style.borderColor = '#e5e7eb';
             }}
           />

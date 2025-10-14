@@ -1,5 +1,6 @@
 
 import React from 'react';
+import DangerButton from '../button/DangerButton';
 import type { Festa } from '../../lib/api';
 import { FiCalendar, FiMapPin, FiStar, FiClock, FiHome, FiX } from 'react-icons/fi';
 
@@ -28,14 +29,14 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
       >
         {/* Botão de fechar no topo direito */}
         <div className="flex justify-end mb-2">
-          <button
+          <DangerButton
             onClick={onClose}
             className="bg-gray-100 hover:bg-gray-200 border-none rounded-full w-10 h-10 flex items-center justify-center text-xl text-gray-500 transition-all duration-200"
             type="button"
             aria-label="Fechar"
           >
             <FiX />
-          </button>
+          </DangerButton>
         </div>
 
         {/* Lista de Eventos */}

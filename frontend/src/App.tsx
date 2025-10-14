@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 
-import Header from './components/Header';
+import Header from './components/header/Header';
 import { buscarFestas } from './lib/api';
 import type { Festa } from './lib/api';
-import type { FilterState } from './components/filters/EventFilters';
+import type { FilterState } from './components/admin/filters/EventFilters';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import Inicio from './pages/home/inicio';
