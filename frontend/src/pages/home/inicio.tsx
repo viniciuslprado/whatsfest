@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
 import DayEventsModal from '../../components/modals/DayEventsModal';
-import FlyerCarousel from '../../components/Flyer/FlyerCarousel';
 import EventFilters from '../../components/admin/filters/EventFilters';
 import Calendar from '../../components/calendar/Calendar';
 import type { Festa } from '../../lib/api';
@@ -31,7 +29,7 @@ const Inicio: React.FC<InicioProps> = ({ filters, onFiltersChange, festas }) => 
 
   return (
     <div style={{ padding: '20px 10px' }}>
-      <FlyerCarousel />
+
       <EventFilters filters={filters} onFiltersChange={handleFiltersChange} />
 
       {/* Lista de eventos filtrados só aparece após clicar em pesquisar */}
