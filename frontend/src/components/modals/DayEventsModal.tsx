@@ -1,6 +1,8 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import type { Festa } from '../../lib/api';
 import { FiCalendar, FiClock, FiMapPin, FiHome, FiStar } from 'react-icons/fi';
+import FestaDetailsModal from './FestaDetailsModal';
 
 interface DayEventsModalProps {
   selectedDate: Date | null;
@@ -15,6 +17,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
   onClose,
   onEventClick
 }) => {
+  const [selectedFesta, setSelectedFesta] = useState<Festa | null>(null);
   if (!selectedDate) return null;
 
   const formatDate = (date: Date) => {
@@ -26,90 +29,30 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
     });
   };
 
+  const handleEventClick = (festa: Festa) => {
+    setSelectedFesta(festa);
+    if (onEventClick) onEventClick(festa);
+  };
+
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-        padding: '1rem'
-      }}
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1000] p-4"
       onClick={onClose}
     >
       <div
-        style={{
-          backgroundColor: 'white',
-          borderRadius: '20px',
-          padding: '2rem',
-          maxWidth: '600px',
-          width: '100%',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-          position: 'relative'
-        }}
+        className="bg-white rounded-2xl p-8 max-w-xl w-full max-h-[80vh] overflow-y-auto shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: '2rem',
-          paddingBottom: '1rem',
-          borderBottom: '2px solid #f3f4f6'
-        }}>
+        <div className="flex justify-between items-start mb-8 pb-4 border-b-2 border-gray-100">
           <div>
-            <h2 style={{
-              fontSize: '1.8rem',
-              fontWeight: '700',
-              color: '#1f2937',
-              margin: '0 0 0.5rem 0'
-            }}>
-              Eventos do Dia
-            </h2>
-            <p style={{
-              fontSize: '1rem',
-              color: '#6b7280',
-              margin: 0,
-              fontWeight: '500',
-              textTransform: 'capitalize'
-            }}>
-              {formatDate(selectedDate)}
-            </p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Eventos do Dia</h2>
+            <p className="text-gray-500 text-base font-medium capitalize m-0">{formatDate(selectedDate)}</p>
           </div>
-          
           <button
             onClick={onClose}
-            style={{
-              background: '#f3f4f6',
-              border: 'none',
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              cursor: 'pointer',
-              fontSize: '20px',
-              color: '#6b7280',
-              transition: 'all 0.3s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#e5e7eb';
-              e.currentTarget.style.transform = 'scale(1.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#f3f4f6';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
+            className="bg-gray-100 hover:bg-gray-200 border-none rounded-full w-10 h-10 flex items-center justify-center text-xl text-gray-500 transition-all duration-200"
+            type="button"
           >
             ✕
           </button>
@@ -117,23 +60,15 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
 
         {/* Lista de Eventos */}
         {eventos.length === 0 ? (
-          <div style={{
-            textAlign: 'center',
-            padding: '3rem 1rem',
-            color: '#9ca3af'
-          }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+          <div className="text-center py-12 px-4 text-gray-400">
+            <div className="text-6xl mb-4 flex justify-center">
               <FiCalendar size={64} color="#9ca3af" />
             </div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: '600', margin: '0 0 0.5rem 0' }}>
-              Nenhum evento neste dia
-            </h3>
-            <p style={{ margin: 0 }}>
-              Que tal cadastrar um evento para esta data?
-            </p>
+            <h3 className="text-lg font-semibold mb-2">Nenhum evento neste dia</h3>
+            <p className="m-0">Que tal cadastrar um evento para esta data?</p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="flex flex-col gap-4">
             {eventos.map((evento) => {
               const hora = evento.horaInicio ? 
                 `${evento.horaInicio}${evento.horaFim ? ` - ${evento.horaFim}` : ''}` : 
@@ -142,90 +77,40 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
               return (
                 <div
                   key={evento.id}
-                  onClick={() => onEventClick(evento)}
-                  style={{
-                    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                    border: '2px solid #e2e8f0',
-                    borderRadius: '16px',
-                    padding: '1.5rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#8b5cf6';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 10px 25px rgba(139, 92, 246, 0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#e2e8f0';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
+                  onClick={() => handleEventClick(evento)}
+                  className="relative bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-gray-200 rounded-xl p-6 cursor-pointer transition-all duration-200 overflow-hidden hover:border-purple-500 hover:-translate-y-0.5 hover:shadow-xl"
                 >
                   {/* Badge de destaque */}
                   {evento.destaque && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '1rem',
-                      right: '1rem',
-                      background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-                      color: 'white',
-                      padding: '4px 8px',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}>
-                      <FiStar style={{ display: 'inline', marginRight: '4px' }} />
-                      Destaque
+                    <div className="absolute top-4 right-4 bg-gradient-to-br from-amber-300 to-orange-400 text-white px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow">
+                      <FiStar className="inline mr-1" /> Destaque
                     </div>
                   )}
 
                   <div>
                     {/* Informações do evento */}
                     <div>
-                      <h3 style={{
-                        fontSize: '1.3rem',
-                        fontWeight: '700',
-                        color: '#1f2937',
-                        margin: '0 0 0.5rem 0'
-                      }}>
-                        {evento.nome}
-                      </h3>
+                      <h3 className="text-lg font-bold text-gray-800 mb-2">{evento.nome}</h3>
 
-                      <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.25rem',
-                        fontSize: '0.9rem',
-                        color: '#6b7280'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div className="flex flex-col gap-1 text-sm text-gray-500">
+                        <div className="flex items-center gap-2">
                           <FiClock size={16} />
                           <span>{hora}</span>
                         </div>
                         {evento.local && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <div className="flex items-center gap-2">
                             <FiMapPin size={16} />
                             <span>{evento.local}</span>
                           </div>
                         )}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div className="flex items-center gap-2">
                           <FiHome size={16} />
                           <span>{evento.cidade}</span>
                         </div>
                       </div>
 
                       {evento.descricaoCurta && (
-                        <p style={{
-                          margin: '0.75rem 0 0 0',
-                          color: '#374151',
-                          fontSize: '0.9rem',
-                          lineHeight: '1.5'
-                        }}>
-                          {evento.descricaoCurta}
-                        </p>
+                        <p className="mt-3 text-gray-700 text-sm leading-relaxed">{evento.descricaoCurta}</p>
                       )}
                     </div>
                   </div>
@@ -235,6 +120,8 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
           </div>
         )}
       </div>
+      {/* Modal de detalhes do evento */}
+      <FestaDetailsModal festa={selectedFesta} onClose={() => setSelectedFesta(null)} />
     </div>
   );
 };
