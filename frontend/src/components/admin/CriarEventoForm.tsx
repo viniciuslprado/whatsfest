@@ -17,7 +17,11 @@ const initialFormData: FestaData = {
   destaque: false,
 };
 
-const CriarEventoForm: React.FC = () => {
+interface CriarEventoFormProps {
+  onCreated?: () => void;
+}
+
+const CriarEventoForm: React.FC<CriarEventoFormProps> = ({ onCreated }) => {
   const [formData, setFormData] = useState<FestaData>(initialFormData);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | '' }>({ text: '', type: '' });
@@ -80,9 +84,10 @@ const CriarEventoForm: React.FC = () => {
         setLoading(false);
         return;
       }
-      await criarNovaFesta(formData);
-      setMessage({ text: 'Evento criado com sucesso!', type: 'success' });
-      setFormData(initialFormData);
+  await criarNovaFesta(formData);
+  setMessage({ text: 'Evento criado com sucesso!', type: 'success' });
+  setFormData(initialFormData);
+  if (onCreated) onCreated();
     } catch (error) {
       setMessage({ text: error instanceof Error ? error.message : 'Erro ao criar evento', type: 'error' });
     } finally {
@@ -91,7 +96,7 @@ const CriarEventoForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto bg-white/90 rounded-2xl shadow-lg p-8 mt-8">
+  <form onSubmit={handleSubmit} className="max-w-4xl w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-10 mt-8">
       <h2 className="text-2xl font-bold mb-6 text-center text-purple-700">Criar Novo Evento</h2>
 
       {/* Nome do Evento */}

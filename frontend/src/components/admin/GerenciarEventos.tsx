@@ -1,9 +1,13 @@
 
 
+
 import React, { useEffect, useState } from 'react';
 import type { Festa } from '../../lib/api';
+import CriarEventoForm from './CriarEventoForm';
 
 const GerenciarEventos: React.FC = () => {
+
+  const [showCriar, setShowCriar] = useState(false);
 
   const [eventos, setEventos] = useState<Festa[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +39,12 @@ const GerenciarEventos: React.FC = () => {
   useEffect(() => {
     fetchEventos();
   }, []);
+
+  // Função para recarregar eventos após criar novo
+  const handleEventoCriado = () => {
+    setShowCriar(false);
+    fetchEventos();
+  };
 
   // Exclusão de evento
   const handleDelete = async (id: number) => {
@@ -102,6 +112,10 @@ const GerenciarEventos: React.FC = () => {
         <h2 className="text-2xl font-bold text-purple-700">Gerenciar Eventos</h2>
         <div className="flex gap-2">
           <button
+            className="px-4 py-2 rounded-lg text-xs font-bold bg-green-600 text-white hover:bg-green-700 transition"
+            onClick={() => setShowCriar(true)}
+          >Adicionar Evento</button>
+          <button
             className={`px-4 py-2 rounded-lg text-xs font-bold transition ${selectedId ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
             disabled={!selectedId || editId !== null}
             onClick={() => {
@@ -118,6 +132,19 @@ const GerenciarEventos: React.FC = () => {
           >Excluir</button>
         </div>
       </div>
+
+      {/* Modal Criar Evento */}
+      {showCriar && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-white rounded-2xl shadow-2xl p-0 max-w-3xl w-full relative animate-fade-in">
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold z-10"
+              onClick={() => setShowCriar(false)}
+            >✕</button>
+            <CriarEventoForm onCreated={handleEventoCriado} />
+          </div>
+        </div>
+      )}
       {loading ? (
         <div className="text-center text-gray-500 py-8">Carregando eventos...</div>
       ) : error ? (

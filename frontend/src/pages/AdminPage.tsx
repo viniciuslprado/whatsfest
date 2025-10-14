@@ -27,14 +27,13 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
           {/* Sistema de Abas */}
           <div className="flex gap-2 border-t border-white/20 pt-6 mt-6">
             {[
-              { id: 'eventos', label: '📅 Criar Eventos', icon: FaPlus },
               { id: 'gerenciar', label: '📝 Gerenciar Eventos', icon: FaCog },
               { id: 'flyers', label: '🎨 Upload Flyers', icon: FaImage }
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => {
-                  setActiveTab(tab.id as 'eventos' | 'flyers' | 'gerenciar');
+                  setActiveTab(tab.id as 'flyers' | 'gerenciar');
                 }}
                 className={
                   `${activeTab === tab.id
@@ -48,17 +47,9 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
           </div>
         </div>
 
-
-
-
         {/* Seção de Gerenciar Eventos */}
         {activeTab === 'gerenciar' && (
           <GerenciarEventos />
-        )}
-
-        {/* Seção de Criar Evento */}
-        {activeTab === 'eventos' && (
-          <CriarEventoForm />
         )}
 
         {/* Seção de Upload de Flyers */}

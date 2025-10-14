@@ -73,45 +73,72 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
               const hora = evento.horaInicio ? 
                 `${evento.horaInicio}${evento.horaFim ? ` - ${evento.horaFim}` : ''}` : 
                 'Horário não informado';
-
+              const dataFormatada = evento.data ? new Date(evento.data).toLocaleDateString('pt-BR', {
+                weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+              }) : 'Data não informada';
+              const mapSearchTerm = encodeURIComponent(evento.local ? `${evento.local}, ${evento.cidade}` : evento.cidade);
               return (
                 <div
                   key={evento.id}
-                  onClick={() => handleEventClick(evento)}
-                  className="relative bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-gray-200 rounded-xl p-6 cursor-pointer transition-all duration-200 overflow-hidden hover:border-purple-500 hover:-translate-y-0.5 hover:shadow-xl"
+                  className="relative bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-gray-200 rounded-2xl p-0 overflow-hidden shadow-xl"
                 >
-                  {/* Badge de destaque */}
-                  {evento.destaque && (
-                    <div className="absolute top-4 right-4 bg-gradient-to-br from-amber-300 to-orange-400 text-white px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow">
-                      <FiStar className="inline mr-1" /> Destaque
-                    </div>
-                  )}
-
-                  <div>
-                    {/* Informações do evento */}
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-800 mb-2">{evento.nome}</h3>
-
-                      <div className="flex flex-col gap-1 text-sm text-gray-500">
-                        <div className="flex items-center gap-2">
-                          <FiClock size={16} />
-                          <span>{hora}</span>
+                  {/* Imagem/Flyer do Evento */}
+                  <div className="relative">
+                    <img 
+                      src={evento.urlImagemFlyer || 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'} 
+                      alt={`Flyer da ${evento.nome}`} 
+                      className="w-full h-48 object-cover rounded-t-2xl"
+                      onError={e => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600/6366f1/ffffff?text=Evento+de+Texto'; }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-2xl"></div>
+                    {evento.destaque && (
+                      <div className="absolute top-4 right-4 bg-gradient-to-br from-amber-300 to-orange-400 text-white px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow">
+                        <FiStar className="inline mr-1" /> Destaque
+                      </div>
+                    )}
+                  </div>
+                  {/* Conteúdo do Evento */}
+                  <div className="p-6">
+                    <h3 className="text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">{evento.nome}</h3>
+                    {evento.descricaoCurta && (
+                      <p className="text-sm font-medium text-purple-600 mb-4 px-3 py-1 bg-purple-100 rounded-full inline-block">{evento.descricaoCurta}</p>
+                    )}
+                    <div className="space-y-4 border-t border-gray-200 pt-6">
+                      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-xl">
+                        <div className="flex items-center text-gray-800 mb-2">
+                          <FiCalendar className="text-2xl mr-3" />
+                          <div>
+                            <span className="font-semibold text-purple-700">Data:</span> 
+                            <span className="ml-2">{dataFormatada}</span>
+                          </div>
                         </div>
-                        {evento.local && (
-                          <div className="flex items-center gap-2">
-                            <FiMapPin size={16} />
-                            <span>{evento.local}</span>
+                        <div className="flex items-center text-gray-800 mb-2">
+                          <span className="text-2xl mr-3">⏰</span>
+                          <div>
+                            <span className="font-semibold text-purple-700">Hora:</span> 
+                            <span className="ml-2">{hora}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center text-gray-800 mb-2">
+                          <FiMapPin className="text-2xl mr-3" />
+                          <div>
+                            <span className="font-semibold text-purple-700">Local:</span> 
+                            <span className="ml-2">{evento.local || '-'}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center text-gray-800">
+                          <span className="text-2xl mr-3">🏙️</span>
+                          <div>
+                            <span className="font-semibold text-purple-700">Cidade:</span> 
+                            <span className="ml-2">{evento.cidade}</span>
+                          </div>
+                        </div>
+                        {evento.linkVendas && (
+                          <div className="flex items-center text-gray-800 mt-2">
+                            <a href={evento.linkVendas} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline font-semibold">Comprar Ingressos</a>
                           </div>
                         )}
-                        <div className="flex items-center gap-2">
-                          <FiHome size={16} />
-                          <span>{evento.cidade}</span>
-                        </div>
                       </div>
-
-                      {evento.descricaoCurta && (
-                        <p className="mt-3 text-gray-700 text-sm leading-relaxed">{evento.descricaoCurta}</p>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -120,8 +147,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
           </div>
         )}
       </div>
-      {/* Modal de detalhes do evento */}
-      <FestaDetailsModal festa={selectedFesta} onClose={() => setSelectedFesta(null)} />
+  {/* Modal de detalhes do evento removido, pois detalhes agora aparecem direto nos cards */}
     </div>
   );
 };
