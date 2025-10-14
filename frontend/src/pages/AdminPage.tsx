@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { FaPlus, FaArrowLeft, FaImage, FaCog } from 'react-icons/fa';
-import CriarEventoForm from '../components/admin/CriarEventoForm';
+import { FaArrowLeft, FaImage, FaCog } from 'react-icons/fa';
 import GerenciarEventos from '../components/admin/GerenciarEventos';
 import UploadFlyer from '../components/admin/UploadFlyer';
 

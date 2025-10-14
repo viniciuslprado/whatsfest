@@ -1,23 +1,20 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { Festa } from '../../lib/api';
-import { FiCalendar, FiClock, FiMapPin, FiHome, FiStar } from 'react-icons/fi';
-import FestaDetailsModal from './FestaDetailsModal';
+import { FiCalendar, FiMapPin, FiStar } from 'react-icons/fi';
 
 interface DayEventsModalProps {
   selectedDate: Date | null;
   eventos: Festa[];
   onClose: () => void;
-  onEventClick: (festa: Festa) => void;
 }
 
 const DayEventsModal: React.FC<DayEventsModalProps> = ({
   selectedDate,
   eventos,
-  onClose,
-  onEventClick
+  onClose
 }) => {
-  const [selectedFesta, setSelectedFesta] = useState<Festa | null>(null);
+  // removido selectedFesta
   if (!selectedDate) return null;
 
   const formatDate = (date: Date) => {
@@ -29,10 +26,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
     });
   };
 
-  const handleEventClick = (festa: Festa) => {
-    setSelectedFesta(festa);
-    if (onEventClick) onEventClick(festa);
-  };
+  // removido handleEventClick
 
   return (
     <div
@@ -76,7 +70,7 @@ const DayEventsModal: React.FC<DayEventsModalProps> = ({
               const dataFormatada = evento.data ? new Date(evento.data).toLocaleDateString('pt-BR', {
                 weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
               }) : 'Data não informada';
-              const mapSearchTerm = encodeURIComponent(evento.local ? `${evento.local}, ${evento.cidade}` : evento.cidade);
+              // removido mapSearchTerm
               return (
                 <div
                   key={evento.id}
