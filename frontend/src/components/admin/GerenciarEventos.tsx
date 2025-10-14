@@ -136,7 +136,8 @@ const GerenciarEventos: React.FC = () => {
               {eventos.map((evento) => (
                 <tr
                   key={evento.id}
-                  className={`transition cursor-pointer ${selectedId === evento.id ? 'bg-purple-100/60 ring-2 ring-purple-400' : 'hover:bg-purple-50'}`}
+                  className={`transition cursor-pointer ${selectedId === evento.id ? 'bg-purple-100/80 ring-2 ring-purple-500 shadow-lg scale-[1.01] border-2 border-pink-500' : 'hover:bg-purple-50'}`}
+                  style={selectedId === evento.id ? { boxShadow: '0 0 0 2px #ec4899, 0 4px 16px 0 rgba(139,92,246,0.10)' } : {}}
                   onClick={() => handleSelect(evento)}
                 >
                   <td className="px-4 py-2 font-semibold text-gray-800">{evento.nome}</td>

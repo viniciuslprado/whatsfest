@@ -4,7 +4,11 @@ import { FiUploadCloud, FiImage, FiTrash2, FiCheckCircle } from 'react-icons/fi'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? 'https://whatsfest-backend.onrender.com' : 'http://localhost:3000');
 
-const UploadFlyer: React.FC = () => {
+interface UploadFlyerProps {
+  onAfterUpload?: () => void;
+}
+
+const UploadFlyer: React.FC<UploadFlyerProps> = ({ onAfterUpload }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -94,7 +98,7 @@ const UploadFlyer: React.FC = () => {
   };
 
   return (
-    <div className="bg-white/90 rounded-2xl shadow-lg p-1 sm:p-3 md:p-6 w-full max-w-full relative flex flex-col min-h-[500px]" style={{height: 'calc(80vh)', maxHeight: '800px'}}>
+  <div className="bg-white/90 rounded-2xl shadow-lg p-1 sm:p-3 md:p-6 w-full max-w-lg relative flex flex-col min-h-[350px]" style={{height: '520px', maxHeight: '520px'}}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-pink-700 flex items-center gap-2"><FiUploadCloud /> Gerenciar Flyers</h2>
         <div className="flex gap-2">
@@ -158,7 +162,7 @@ const UploadFlyer: React.FC = () => {
                   setShowUpload(false);
                 }}
               >
-                {uploading ? 'Enviando...' : 'Enviar Flyer'}
+                {uploading ? 'Salvando...' : 'Salvar'}
                 {success && <FiCheckCircle className="inline ml-2 text-green-500" />}
               </button>
             </div>
@@ -167,7 +171,7 @@ const UploadFlyer: React.FC = () => {
       )}
 
       {/* Lista de Flyers */}
-      <div className="w-full flex-1 overflow-y-auto max-h-full scrollbar-thin scrollbar-thumb-pink-200 scrollbar-track-pink-50 pb-4">
+  <div className="w-full flex-1 overflow-y-auto max-h-[340px] scrollbar-thin scrollbar-thumb-pink-200 scrollbar-track-pink-50 pb-4">
         {flyers.length === 0 ? (
           <div className="text-gray-400 text-center mt-12">Nenhum flyer enviado ainda.</div>
         ) : (
@@ -175,11 +179,14 @@ const UploadFlyer: React.FC = () => {
             {flyers.map(flyer => (
               <div
                 key={flyer.filename}
-                className={`relative border-2 rounded-xl p-2 flex flex-col items-center cursor-pointer transition ${selected === flyer.filename ? 'border-pink-500 ring-2 ring-pink-400' : 'border-pink-100 hover:border-pink-300'}`}
+                className={`relative border-2 rounded-xl p-2 flex flex-row items-center gap-2 cursor-pointer transition ${selected === flyer.filename ? 'border-pink-500 ring-2 ring-pink-400' : 'border-pink-100 hover:border-pink-300'}`}
                 onClick={() => setSelected(flyer.filename === selected ? null : flyer.filename)}
               >
-                <img src={`${API_BASE}${flyer.url}`} alt={flyer.filename} className="max-h-32 rounded mb-2" />
-                <div className="text-xs text-gray-600 break-all text-center max-w-[120px]">{flyer.filename}</div>
+                {/* Mini prévia */}
+                <img src={`${API_BASE}${flyer.url}`} alt={flyer.filename} className="h-10 w-10 object-cover rounded mr-2 border border-gray-200" />
+                <div className="flex-1 flex flex-col items-start justify-center">
+                  <div className="text-xs text-gray-600 break-all max-w-[120px]">{flyer.filename}</div>
+                </div>
                 {selected === flyer.filename && (
                   <button
                     className="absolute top-2 right-2 bg-white/80 rounded-full p-1 text-red-600 hover:bg-red-100 shadow"
