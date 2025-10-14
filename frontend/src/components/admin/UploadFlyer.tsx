@@ -94,7 +94,7 @@ const UploadFlyer: React.FC = () => {
   };
 
   return (
-  <div className="bg-white/90 rounded-2xl shadow-lg p-1 sm:p-3 md:p-6 w-full max-w-lg relative flex flex-col min-h-[350px]" style={{height: '520px', maxHeight: '520px'}}>
+  <div className="bg-white/90 rounded-2xl shadow-lg p-1 sm:p-3 md:p-6 w-full max-w-full relative flex flex-col min-h-[350px]" style={{height: '520px', maxHeight: '520px'}}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-pink-700 flex items-center gap-2"><FiUploadCloud /> Gerenciar Flyers</h2>
         <div className="flex gap-2">
