@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import PrimaryButton from '../button/PrimaryButton';
-import SecondaryButton from '../button/SecondaryButton';
+import GhostButton from '../button/GhostButton';
 import { GiPartyPopper } from 'react-icons/gi';
 import { FaTimes, FaBars, FaHome, FaInfoCircle, FaCog, FaWhatsapp } from 'react-icons/fa';
 
@@ -29,14 +28,14 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         </div>
 
         {/* Menu Hamburguer Mobile */}
-        <SecondaryButton
+        <GhostButton
           className="sm:hidden ml-auto p-2 rounded-full hover:bg-white/10 focus:outline-none"
           aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
           onClick={() => setMenuOpen((v) => !v)}
           type="button"
         >
           {menuOpen ? <FaTimes size={28} /> : <FaBars size={28} />}
-        </SecondaryButton>
+        </GhostButton>
 
         {/* Navegação */}
         <nav
@@ -46,43 +45,48 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           `}
         >
           {/* Botões principais */}
-          <PrimaryButton
+          <GhostButton
             onClick={() => handleNavigate('inicio')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
-              ${currentPage === 'inicio' ? 'bg-white/20 shadow text-white' : 'hover:bg-white/10 text-white/90'}`}
+            active={currentPage === 'inicio'}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold"
             type="button"
           >
             <FaHome /> Início
-          </PrimaryButton>
-          <SecondaryButton
+          </GhostButton>
+          <GhostButton
             onClick={() => handleNavigate('sobre')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all
-              ${currentPage === 'sobre' ? 'bg-white/20 shadow' : 'hover:bg-white/10'}`}
+            active={currentPage === 'sobre'}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold"
             type="button"
           >
             <FaInfoCircle /> Sobre
-          </SecondaryButton>
+          </GhostButton>
 
           {/* Link WhatsApp */}
           <a
             href="https://chat.whatsapp.com/DVbSwHcYZqJ3lFapfelkN6"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all hover:bg-white/10 text-white/90"
             style={{ minWidth: 0 }}
+            className="no-underline"
           >
-            <FaWhatsapp size={20} /> Grupo WhatsApp
+            <GhostButton
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold w-full"
+              type="button"
+            >
+              <FaWhatsapp size={20} /> Grupo WhatsApp
+            </GhostButton>
           </a>
 
           {/* Admin sempre no final */}
-          <SecondaryButton
+          <GhostButton
             onClick={() => handleNavigate('login')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border-2 border-white/30 transition-all
-              ${currentPage === 'login' ? 'bg-white/20 shadow' : 'hover:bg-white/10'}`}
+            active={currentPage === 'login'}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border-2 border-white/30"
             type="button"
           >
             <FaCog /> Admin
-          </SecondaryButton>
+          </GhostButton>
         </nav>
       </div>
     </header>
