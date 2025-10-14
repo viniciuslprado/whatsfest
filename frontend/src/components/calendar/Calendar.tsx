@@ -146,7 +146,6 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
         selectedDate={selectedDate}
         eventos={selectedDayEvents}
         onClose={handleCloseDayModal}
-        onEventClick={() => {}}
       />
     </>
   );
