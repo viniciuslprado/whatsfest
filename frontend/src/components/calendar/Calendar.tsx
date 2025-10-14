@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { FaRegStar } from 'react-icons/fa';
 import DayEventsModal from '../modals/DayEventsModal';
 import type { Festa } from '../../lib/api';
 
@@ -68,31 +67,32 @@ const Calendar: React.FC<CalendarProps> = ({ festas = [] }) => {
       });
       const hasEvent = festasDoDia.length > 0;
 
-      // Novo gradiente de destaque para dias com evento
-      const gradBg = hasEvent
-        ? 'bg-gradient-to-br from-yellow-300 via-pink-400 to-fuchsia-500'
-        : 'bg-gray-50';
-      // Sombra colorida sutil para dias com evento
-      const shadow = hasEvent ? 'shadow-[0_2px_8px_0_rgba(236,72,153,0.18)]' : '';
-      // Ícone discreto para dias com evento (centralizado abaixo do número)
-      const eventIcon = hasEvent ? (
-        <span className="flex items-center justify-center mt-0.5">
-          <FaRegStar className="text-yellow-500 text-[13px] sm:text-[14px] drop-shadow-sm" title="Tem evento" />
-        </span>
-      ) : null;
+      // Fundo e borda para dias com evento
+      const eventBg = hasEvent ? 'bg-purple-50 border-purple-300' : 'bg-gray-50 border-gray-200';
 
       days.push(
         <button
           key={day}
           type="button"
-          className={`relative flex flex-col items-center justify-center rounded-lg min-h-[44px] aspect-square select-none transition cursor-pointer border border-gray-200 ${gradBg} ${shadow}
-            hover:brightness-105 hover:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-200`}
+          className={`relative flex flex-col items-center justify-center rounded-lg min-h-[44px] aspect-square select-none transition cursor-pointer border ${eventBg} hover:brightness-105 hover:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200`}
           onClick={() => handleDayClick(day, festasDoDia)}
         >
           {/* Número do dia */}
-          <span className={`font-bold text-base leading-none ${hasEvent ? 'text-fuchsia-900' : 'text-gray-700'} flex items-center justify-center`}>{day}</span>
-          {/* Ícone de evento, pequeno e centralizado */}
-          {eventIcon}
+          <span className={`font-bold text-base leading-none ${hasEvent ? 'text-purple-800' : 'text-gray-700'} flex items-center justify-center`}>{day}</span>
+          {/* Desktop: nomes das festas, um por linha, cada uma em um retângulo */}
+          {hasEvent && (
+            <div className="hidden sm:flex flex-col items-center mt-1 w-full gap-1">
+              {festasDoDia.map((festa, idx) => (
+                <span
+                  key={idx}
+                  className="text-xs text-purple-900 font-semibold truncate w-full text-center bg-purple-100 border border-purple-200 rounded-md px-1 py-0.5"
+                  title={festa.nome}
+                >
+                  {festa.nome}
+                </span>
+              ))}
+            </div>
+          )}
         </button>
       );
     }

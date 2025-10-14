@@ -8,10 +8,10 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
 
   return (
   <div className="min-h-screen w-full m-0 p-0 box-border bg-gradient-to-br from-blue-700 via-purple-700 to-fuchsia-700 overflow-x-hidden">
-    <div className="max-w-5xl w-full mx-auto p-2 sm:p-4 md:p-8 box-border h-auto min-h-[92vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 rounded-2xl">
+  <div className="max-w-5xl w-full mx-auto p-1 sm:p-2 md:p-6 box-border h-auto min-h-[92vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 rounded-2xl">
         {/* Cabeçalho */}
-        <div className="bg-white/15 backdrop-blur-lg rounded-2xl p-2 sm:p-4 md:p-6 mb-4 border border-white/30 shadow-lg">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+  <div className="bg-white/15 backdrop-blur-lg rounded-2xl p-1 sm:p-3 md:p-5 mb-2 border border-white/30 shadow-lg">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white m-0 flex items-center gap-3">
               <FaCog /> Painel Administrativo
             </h1>
@@ -24,7 +24,7 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
           </div>
 
           {/* Sistema de Abas */}
-          <div className="flex flex-wrap gap-2 border-t border-white/20 pt-4 sm:pt-6 mt-4 sm:mt-6">
+          <div className="flex flex-wrap gap-1 sm:gap-2 border-t border-white/20 pt-3 sm:pt-5 mt-3 sm:mt-5">
             {[
               { id: 'gerenciar', label: '📝 Gerenciar Eventos', icon: FaCog },
               { id: 'flyers', label: '🎨 Upload Flyers', icon: FaImage }

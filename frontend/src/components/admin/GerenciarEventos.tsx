@@ -79,7 +79,7 @@ const GerenciarEventos: React.FC = () => {
 
 
   return (
-  <div className="bg-white/90 rounded-2xl shadow-lg p-2 sm:p-4 md:p-8 w-full relative">
+  <div className="bg-white/90 rounded-2xl shadow-lg p-1 sm:p-3 md:p-6 w-full max-w-full relative">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-purple-700">Gerenciar Eventos</h2>
         <div className="flex gap-2">
@@ -124,8 +124,8 @@ const GerenciarEventos: React.FC = () => {
       ) : eventos.length === 0 ? (
         <div className="text-center text-gray-400 py-8">Nenhum evento cadastrado.</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-[320px] sm:min-w-[400px] w-full divide-y divide-gray-200 text-xs sm:text-sm">
+        <div className="overflow-x-auto max-w-full">
+          <table className="min-w-[280px] sm:min-w-[400px] w-full divide-y divide-gray-200 text-xs sm:text-sm">
             <thead>
               <tr>
                 <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase">Nome do Evento *</th>

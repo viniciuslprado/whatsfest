@@ -131,7 +131,7 @@ const UploadFlyer: React.FC = () => {
         {success && <FiCheckCircle className="inline ml-2 text-green-500" />}
       </button>
 
-      <div className="w-full mt-8">
+      <div className="w-full mt-8 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-pink-200 scrollbar-track-pink-50">
         <h3 className="text-lg font-bold mb-4 text-pink-700">Flyers já enviados</h3>
         {flyers.length === 0 ? (
           <div className="text-gray-400 text-center">Nenhum flyer enviado ainda.</div>
