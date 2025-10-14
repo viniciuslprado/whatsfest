@@ -7,8 +7,8 @@ interface GhostButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const GhostButton: React.FC<GhostButtonProps> = ({ children, className = '', active = false, ...props }) => (
   <button
-    className={`px-4 py-2 rounded-lg font-semibold border border-transparent bg-transparent transition-all duration-200
-      ${active ? 'bg-purple-100/80 text-purple-800 shadow-inner' : 'text-purple-700 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-900'}
+    className={`px-4 py-2 rounded-lg font-semibold bg-transparent text-white border border-transparent transition-all duration-200
+      ${active ? 'bg-purple-200/20 shadow-[0_0_0_2px_rgba(168,85,247,0.25)]' : 'hover:shadow-[0_2px_12px_0_rgba(168,85,247,0.25)]'}
       focus:outline-none focus:ring-2 focus:ring-purple-300/60
       ${className}`}
     {...props}

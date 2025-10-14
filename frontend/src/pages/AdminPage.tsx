@@ -8,7 +8,7 @@ const AdminPage: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
 
 
   return (
-  <div className="min-h-screen w-full m-0 p-0 box-border bg-gradient-to-br from-blue-700 via-purple-700 to-fuchsia-700 overflow-x-hidden">
+  <div className="min-h-screen w-full m-0 p-0 box-border bg-gradient-to-br from-blue-900 via-blue-700 via-70% to-purple-700 overflow-x-hidden">
   <div className="max-w-5xl w-full mx-auto p-1 sm:p-2 md:p-6 box-border h-auto min-h-[92vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 rounded-2xl">
         {/* Cabeçalho */}
   <div className="bg-white/15 backdrop-blur-lg rounded-2xl p-1 sm:p-3 md:p-5 mb-2 border border-white/30 shadow-lg">

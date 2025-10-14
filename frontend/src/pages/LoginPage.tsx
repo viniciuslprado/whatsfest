@@ -37,7 +37,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBackToHome }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-5 bg-gradient-to-br from-blue-900 via-blue-500 via-70%">
+  <div className="min-h-screen flex items-center justify-center p-5 bg-gradient-to-br from-blue-900 via-blue-700 to-purple-700">
       <div className="relative w-full max-w-md bg-white/15 backdrop-blur-lg rounded-3xl p-10 shadow-2xl border border-white/30">
         {/* Botão Voltar */}
         <SecondaryButton
