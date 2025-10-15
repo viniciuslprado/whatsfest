@@ -51,3 +51,21 @@ As credenciais de acesso admin devem ser configuradas via variáveis de ambiente
 - Filtros por nome, cidade e data
 - Geolocalização automática
 - Painel administrativo completo
+
+---
+
+## 🧑‍💻 Tecnologias Utilizadas
+
+### Backend
+- **Linguagem:** Node.js (JavaScript/TypeScript)
+- **Framework:** Express.js
+- **ORM:** Prisma
+- **Banco de Dados:** PostgreSQL
+- **Autenticação:** JWT
+
+### Frontend
+- **Linguagem:** TypeScript
+- **Framework:** React
+- **Build:** Vite
+- **Estilização:** Tailwind CSS
+- **Componentes:** React Icons
